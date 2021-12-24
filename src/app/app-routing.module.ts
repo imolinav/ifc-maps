@@ -1,7 +1,14 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
-const routes: Routes = [];
+
+const routes: Routes = [
+  { path: 'home', loadChildren: () => import ('./pages/home/home.module').then(m => m.HomeModule) },
+  { path: 'visualizer', loadChildren: () => import('./pages/visualizer/visualizer.module').then(m => m.VisualizerModule) },
+  { path: 'editor', loadChildren: () => import('./pages/editor/editor.module').then(m => m.EditorModule) },
+  { path: 'search', loadChildren: () => import('./pages/search/search.module').then(m => m.SearchModule) },
+  { path: '', redirectTo: 'home', pathMatch: 'full' }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

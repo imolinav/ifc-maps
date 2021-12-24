@@ -1,0 +1,48 @@
+/* .map {
+    height: 100%;
+    padding: 0;
+}
+ */
+
+.map-container {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  bottom: 0;
+  margin: 30px;
+}
+
+.map-frame {
+  border: 2px solid black;
+  height: calc(100% - 56px);
+}
+
+#map {
+  height: 100%;
+}
+
+.placeholder-glow {
+  padding-left: 5px;
+  margin-top: 25px;
+}
+
+.back-icon {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.resultContainer {
+  padding-left: 5px;
+  .result {
+    margin-top: 25px;
+    .resultLink {
+      cursor: pointer;
+      &:hover {
+        color: rgb(255, 145, 0);
+      }
+      .resultLinkIcon {
+        margin-right: 6px;
+      }
+    }
+  }
+}
