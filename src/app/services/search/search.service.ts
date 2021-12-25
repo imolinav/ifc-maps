@@ -83,10 +83,14 @@ export class SearchService {
   constructor(private httpClient: HttpClient) { }
 
   search(searchParam: string) {
-    return this.httpClient.get(`${this.API_URL}search?limit=2&format=json&q=${searchParam}`);
+    return this.httpClient.get(`${this.API_URL}search?format=json&q=${searchParam}`);
   }
 
   details(osmType: string, osmId: number, type: string) {
-    return this.httpClient.get(`${this.API_URL}details.php?osmtype=${osmType}&osmid=${osmId}&class=${type}&addressdetails=1&hierarchy=0&group_hierarchy=1&polygon_geojson=1&format=json`);
+    return this.httpClient.get(`${this.API_URL}details?osmtype=${osmType}&osmid=${osmId}&class=${type}&addressdetails=1&hierarchy=0&group_hierarchy=1&polygon_geojson=1&format=json`);
+  }
+
+  direction(lat: number, lon: number) {
+    return this.httpClient.get(`${this.API_URL}reverse?lat=${lat}&lon=${lon}&format=json&extratags=1&namedetails=1&polygon_geojson=1`);
   }
 }
