@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 
 import { HttpClientModule } from '@angular/common/http';
 import { IfcService } from './services/ifc/ifc.service';
-import { MarkerService } from './services/marker/marker.service';
-import { PopupService } from './services/popup/popup.service';
-import { ShapeService } from './services/shape/shape.service';
+import { MarkerService } from './services/leaflet/marker/marker.service';
+import { PopupService } from './services/leaflet/popup/popup.service';
+import { ShapeService } from './services/leaflet/shape/shape.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';

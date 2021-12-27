@@ -2,13 +2,13 @@
 // TODO popup
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as Leaflet from 'leaflet';
-import { MarkerService } from '../../services/marker/marker.service';
-import { PopupService } from 'src/app/services/popup/popup.service';
+import { MarkerService } from 'src/app/services/leaflet/marker/marker.service';
+import { PopupService } from 'src/app/services/leaflet/popup/popup.service';
 import {
-  SearchService,
+  NominatimService,
   SearchResult,
   DetailResult,
-} from 'src/app/services/search/search.service';
+} from 'src/app/services/api/nominatim/nominatim.service';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -74,7 +74,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   constructor(
     private markerService: MarkerService,
-    private searchService: SearchService,
+    private nominatimService: NominatimService,
     private popupService: PopupService
   ) {}
 
@@ -87,7 +87,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   search(searchText: string) {
     this.searching = true;
-    this.searchService.search(searchText).subscribe((res: SearchResult[]) => {
+    this.nominatimService.search(searchText).subscribe((res: SearchResult[]) => {
       this.searching = false;
       this.searchResult = res;
     });
@@ -103,7 +103,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (this.resultShape) {
       this.map.removeLayer(this.resultShape);
     }
-    this.searchService
+    this.nominatimService
       .details(
         this.getOsmType(this.searchResult[i].osm_type),
         this.searchResult[i].osm_id,

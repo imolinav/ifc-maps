@@ -76,7 +76,7 @@ export interface DetailResult {
 @Injectable({
   providedIn: 'root'
 })
-export class SearchService {
+export class NominatimService {
 
   API_URL = 'https://nominatim.openstreetmap.org/';
 
