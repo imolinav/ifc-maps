@@ -4,6 +4,7 @@ import { VisualizerComponent } from './visualizer.component';
 
 
 const routes: Routes = [
+  { path: '', component: VisualizerComponent },
   { path: ':id', component: VisualizerComponent }
 ];
 

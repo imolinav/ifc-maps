@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "rollup:build": "rollup -c ./src/assets/js/rollup.config.js",
+    "rollup:watch": "rollup -w -c ./src/assets/js/rollup/rollup.config.js"
   },
   "private": true,
   "dependencies": {
@@ -36,7 +38,6 @@
     "@types/jasmine": "3.10.0",
     "@types/leaflet": "1.7.6",
     "@types/node": "12.11.1",
-    "@types/three": "0.129.1",
     "codelyzer": "5.1.2",
     "jasmine-core": "3.10.0",
     "karma": "6.3.0",
