@@ -1,4 +1,5 @@
 import { DoubleSide, MeshLambertMaterial } from 'three';
+import { LoaderSettings } from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
 
 export class IfcService {
@@ -7,6 +8,7 @@ export class IfcService {
   container?: HTMLElement;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
+  webConfig: LoaderSettings = { COORDINATE_TO_ORIGIN: true, USE_FAST_BOOLS: false };
 
   constructor() {
     this.onSelectActions = [];
@@ -30,6 +32,7 @@ export class IfcService {
       selectMaterial
     });
     this.ifcViewer.IFC.setWasmPath('assets/wasm/');
+    this.ifcViewer.IFC?.applyWebIfcConfig(this.webConfig);
   }
 
   setupInputs() {
@@ -48,7 +51,7 @@ export class IfcService {
   }
 
   loadIfcUrl(url: string) {
-    this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`, true, (event) => {
+    this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`, false, (event) => {
       const progress = event.loaded / event.total * 100;
       console.log(`Progress: ${progress}%`);
     }).then((res) => {
