@@ -29,8 +29,6 @@ export class IfcService {
       preselectMaterial,
       selectMaterial
     });
-    this.ifcViewer.addAxes();
-    this.ifcViewer.addGrid();
     this.ifcViewer.IFC.setWasmPath('assets/wasm/');
   }
 
@@ -50,7 +48,13 @@ export class IfcService {
   }
 
   loadIfcUrl(url: string) {
-    this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`);
+    this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`, true, (event) => {
+      const progress = event.loaded / event.total * 100;
+      console.log(`Progress: ${progress}%`);
+    }).then((res) => {
+      console.log(res)
+      this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
+    });
   }
 
   select(modelID: number, expressID: number, pick = true) {
