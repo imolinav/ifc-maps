@@ -4,7 +4,8 @@ import { VisualizerComponent } from './visualizer.component';
 
 
 const routes: Routes = [
-  { path: ':id', component: VisualizerComponent }
+  { path: ':id', component: VisualizerComponent },
+  { path: '', component: VisualizerComponent }
 ];
 
 @NgModule({
