@@ -1,11 +1,14 @@
 import { DoubleSide, MeshLambertMaterial } from 'three';
-import { LoaderSettings } from 'web-ifc';
+import { LoaderSettings, IFCSPACE, IFCWALL, IFCSTAIR, IfcSpace, IfcWall, IfcStair } from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
 
 export class IfcService {
   currentModel = -1;
   ifcViewer?: IfcViewerAPI;
   container?: HTMLElement;
+  modelId: number;
+  spaces: IfcStair[];
+  spacesPromise: Promise<IfcStair[]>;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
   webConfig: LoaderSettings = { COORDINATE_TO_ORIGIN: true, USE_FAST_BOOLS: false };
@@ -50,12 +53,14 @@ export class IfcService {
     this.ifcViewer?.IFC.loadIfc(file, true);
   }
 
-  loadIfcUrl(url: string) {
-    this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`, false, (event) => {
+  async loadIfcUrl(url: string) {
+    await this.ifcViewer?.IFC.loadIfcUrl(`assets/ifc/${url}.ifc`, false, (event) => {
       const progress = event.loaded / event.total * 100;
       console.log(`Progress: ${progress}%`);
     }).then((res) => {
-      console.log(res)
+      console.log(res);
+      this.modelId = res.modelID;
+      // console.log(res.modelID);
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
     });
   }
@@ -64,6 +69,10 @@ export class IfcService {
     if (pick) this.ifcViewer?.IFC.pickIfcItemsByID(modelID, [expressID]);
     this.currentModel = modelID;
     this.onSelectActions.forEach((action) => action(modelID, expressID));
+  }
+
+  async getSpaces() {
+    return await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(0, IFCSTAIR, true);
   }
 
   async pick() {
@@ -96,5 +105,21 @@ export class IfcService {
       depthTest: false,
       side: DoubleSide
     });
+  }
+
+  highlightElement(elementId: number) {
+    this.ifcViewer?.IFC.highlight.pickByID(this.modelId, [elementId]);
+  }
+
+  selectElement(elementId: number) {
+    this.ifcViewer?.IFC.selection.pickByID(this.modelId, [elementId]);
+  }
+
+  unselectElement() {
+    this.ifcViewer?.IFC.unpickIfcItems();
+  }
+
+  removeHighlight() {
+    this.ifcViewer?.IFC.unHighlightIfcItems();
   }
 }

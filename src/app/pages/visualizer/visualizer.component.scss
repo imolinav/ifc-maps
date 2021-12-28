@@ -13,6 +13,21 @@
 }
 
 #viewer-container {
-  width: 82vw;
-  height: calc(100vh - 80px);
+  width: 80vw;
+  height: calc(100vh - 100px);
+}
+
+.model-items {
+  margin-top: 20px;
+  max-height: calc(100vh - 76px);
+  overflow: auto;
+  &-item {
+    cursor: pointer;
+    &.selected {
+      color: red;
+    }
+    &:hover {
+      color: rgb(255, 145, 0);
+    }
+  }
 }
