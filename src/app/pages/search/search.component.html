@@ -19,9 +19,9 @@
         </button>
       </div>
     </div>
-    <div class="resultContainer" *ngIf="searchResult && !searching">
-        <div class="result" *ngFor="let item of searchResult; index as i">
-            <p class="resultLink" (click)="goTo(i)"><i [class]="'resultLinkIcon bi bi-' + getResultType(item.class)['icon']"></i>{{ item.display_name }}</p>
+    <div class="result" *ngIf="searchResult && !searching">
+        <div class="result-item" *ngFor="let item of searchResult; index as i">
+            <p class="result-item-link" (click)="goTo(i)"><i [class]="'result-item-link-icon bi bi-' + getResultType(item.class)['icon']"></i>{{ item.display_name }}</p>
         </div>
     </div>
     <p class="placeholder-glow" *ngIf="searching">
@@ -84,7 +84,7 @@
     <button *ngIf="selectedBuilding.category === 'building'" class="btn btn-warning btn-small w-100 mt-3" (click)="putIFC(selectedBuilding.osm_id)">{{ hasIFC ? 'Modificar' : 'Añadir' }} modelo IFC</button>
   </div>
   <div class="col-8 map-container">
-    <div class="map-frame">
+    <div class="map-container-frame">
       <div id="map"></div>
     </div>
   </div>

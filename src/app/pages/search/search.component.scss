@@ -10,15 +10,13 @@
   right: 0;
   bottom: 0;
   margin: 30px;
-}
-
-.map-frame {
-  border: 2px solid black;
-  height: calc(100% - 56px);
-}
-
-#map {
-  height: 100%;
+  &-frame {
+    border: 2px solid black;
+    height: calc(100% - 56px);
+    #map {
+      height: 100%;
+    }
+  }
 }
 
 .placeholder-glow {
@@ -31,16 +29,16 @@
   cursor: pointer;
 }
 
-.resultContainer {
+.result {
   padding-left: 5px;
-  .result {
+  &-item {
     margin-top: 25px;
-    .resultLink {
+    &-link {
       cursor: pointer;
       &:hover {
         color: rgb(255, 145, 0);
       }
-      .resultLinkIcon {
+      &-icon {
         margin-right: 6px;
       }
     }
