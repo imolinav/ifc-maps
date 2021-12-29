@@ -1,0 +1,10 @@
+{
+    "HOME": {
+        "TITLE": "Ejemplo de i18n con Transloco en Angular"
+    },
+    "LANGUAGE": {
+        "ES": "Español",
+        "EN": "Inglés",
+        "VAL": "Valenciano"
+    }
+}
