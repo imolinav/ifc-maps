@@ -13,6 +13,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   ifcId: string;
   spaces: IfcStair[];
   itemSelected: number;
+  loading = false;
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
 
@@ -25,13 +26,21 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   async ngAfterContentInit() {
+    if(this.ifcId) { 
+      this.loadModel(`assets/ifc/${this.ifcId}.ifc`);
+    }
+  }
+
+  async loadModel(url: string) {
+    this.loading = true;
     const container = this.getContainer();
     if(container) { 
       this.ifcService.startIfcViewer(container);
-      await this.ifcService.loadIfcUrl(this.ifcId);
+      await this.ifcService.loadIfcUrl(url);
       // TODO: check this Promise so it doesn't block the previous one
       this.spaces = await this.ifcService.getSpaces();
     }
+    this.loading = false;
   }
 
   private getContainer() {
@@ -55,6 +64,12 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.ifcService.selectElement(elementId);
       this.itemSelected = elementId;
     }
+  }
+
+  readModel(event) {
+    const file = event.target.files[0];
+    const ifcUrl = URL.createObjectURL(file);
+    this.loadModel(ifcUrl);
   }
 
 }

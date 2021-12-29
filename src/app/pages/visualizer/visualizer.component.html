@@ -4,6 +4,9 @@
             <div *ngIf="spaces && spaces.length > 0" class="model-items">
                 <p class="model-items-item" *ngFor="let item of spaces" [class]="item.expressID === itemSelected ? 'selected' : ''" (mouseover)="highlightElement(item.expressID, true)" (click)="selectElement(item.expressID)" (mouseout)="highlightElement(item.expressID, false)">{{ item.Name.value }}</p>
             </div>
+            <div *ngIf="!spaces && !loading">
+                <input type="file" name="load" id="file-input" (change)="readModel($event)">
+            </div>
         </div>
         <div class="col-10">
             <div #threeContainer id="viewer-container"></div>
