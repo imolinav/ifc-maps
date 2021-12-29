@@ -21,8 +21,34 @@
         },
         "DETAIL": {
             "CATEGORIES": {
+                "INFO": "Información",
                 "BUILDING": "del edificio",
                 "HIGHWAY": "de la calle"
+            },
+            "TABLE": {
+                "STREET": "Calle",
+                "NUMBER": "Número",
+                "CITY": "Ciudad",
+                "POSTAL_CODE": "Código postal",
+                "FLOORS": "Pisos",
+                "GARAGE_FLOORS": "Pisos garaje",
+                "DESCRIPTION": "Descripción",
+                "HEIGHT": "Altura"
+            },
+            "BUTTONS": {
+                "SEE": "Ver modelo IFC",
+                "ADD": "Añadir modelo IFC",
+                "EDIT": "Editar modelo IFC"
+            },
+            "HEADERS": {
+                "STREET": "Calle",
+                "TOWN": "Ciudad",
+                "ZONE": "Zona",
+                "PROVINCE": "Provincia",
+                "COMMUNITY": "Comunidad Autónoma",
+                "POSTAL_CODE": "Código postal",
+                "COUNTRY": "País",
+                "COUNTRY_ABBREVIATED": "País (abreviado)"
             }
         }
     }    

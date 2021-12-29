@@ -21,8 +21,34 @@
         },
         "DETAIL": {
             "CATEGORIES": {
+                "INFO": "Informació",
                 "BUILDING": "de l'edifici",
                 "HIGHWAY": "del carrer"
+            },
+            "TABLE": {
+                "STREET": "Carrer",
+                "NUMBER": "Número",
+                "CITY": "Ciutat",
+                "POSTAL_CODE": "Códi postal",
+                "FLOORS": "Pisos",
+                "GARAGE_FLOORS": "Pisos garaig",
+                "DESCRIPTION": "Descripció",
+                "HEIGHT": "Altura"
+            },
+            "BUTTONS": {
+                "SEE": "Vore model IFC",
+                "ADD": "Afegir model IFC",
+                "EDIT": "Edita model IFC"
+            },
+            "HEADERS": {
+                "STREET": "Carrer",
+                "TOWN": "Ciutat",
+                "ZONE": "Zona",
+                "PROVINCE": "Provincia",
+                "COMMUNITY": "Comunitat Autònoma",
+                "POSTAL_CODE": "Códi postal",
+                "COUNTRY": "País",
+                "COUNTRY_ABBREVIATED": "País (abreviat)"
             }
         }
     }    

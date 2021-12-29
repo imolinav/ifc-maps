@@ -158,9 +158,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
   getResultType(category: string) {
     switch (category) {
       case 'building':
-        return { text: 'del edificio', icon: 'building' };
+        return { text: this.translocoService.translate('SEARCH.DETAIL.CATEGORIES.BUILDING'), icon: 'building' };
       case 'highway':
-        return { text: 'de la calle', icon: 'distribute-horizontal' };
+        return { text: this.translocoService.translate('SEARCH.DETAIL.CATEGORIES.HIGHWAY'), icon: 'distribute-horizontal' };
       default:
         return { text: '', icon: '' }
     }

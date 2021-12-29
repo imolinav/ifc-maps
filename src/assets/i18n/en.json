@@ -21,8 +21,34 @@
         },
         "DETAIL": {
             "CATEGORIES": {
+                "INFO": "Info",
                 "BUILDING": "of the building",
                 "HIGHWAY": "of the street"
+            },
+            "TABLE": {
+                "STREET": "Street",
+                "NUMBER": "Number",
+                "CITY": "City",
+                "POSTAL_CODE": "Postal code",
+                "FLOORS": "Floors",
+                "GARAGE_FLOORS": "Garage floors",
+                "DESCRIPTION": "Description",
+                "HEIGHT": "Height"
+            },
+            "BUTTONS": {
+                "SEE": "See IFC model",
+                "ADD": "Add IFC model",
+                "EDIT": "Edit IFC model"
+            },
+            "HEADERS": {
+                "STREET": "Street",
+                "TOWN": "Town",
+                "ZONE": "Zone",
+                "PROVINCE": "Province",
+                "COMMUNITY": "Community",
+                "POSTAL_CODE": "Postal code",
+                "COUNTRY": "Country",
+                "COUNTRY_ABBREVIATED": "Country (abbreviated)"
             }
         }
     }    
