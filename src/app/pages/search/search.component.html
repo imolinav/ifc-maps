@@ -1,16 +1,34 @@
 <div class="row">
   <div class="col-3 mt-4" *ngIf="!selectedBuilding">
     <mat-form-field class="example-form-field" appearance="fill">
-      <mat-label>{{ 'SEARCH.FORM.INPUT_PLACEHOLDER' | transloco }}</mat-label>
-      <input matInput type="text" #searchText (keyup)="searchInput($event, searchText.value)">
-      <button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Search" (click)="search(searchText.value)">
+      <mat-label>{{ "SEARCH.FORM.INPUT_PLACEHOLDER" | transloco }}</mat-label>
+      <input
+        matInput
+        type="text"
+        #searchText
+        (keyup)="searchInput($event, searchText.value)"
+      />
+      <button
+        *ngIf="searchText.value"
+        matSuffix
+        mat-icon-button
+        aria-label="Search"
+        (click)="search(searchText.value)"
+      >
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
     <div class="result" *ngIf="searchResult && !searching">
-        <div class="result-item" *ngFor="let item of searchResult; index as i">
-            <p class="result-item-link" (click)="goTo(i)"><i [class]="'result-item-link-icon bi bi-' + getResultType(item.class)['icon']"></i>{{ item.display_name }}</p>
-        </div>
+      <div class="result-item" *ngFor="let item of searchResult; index as i">
+        <p class="result-item-link" (click)="goTo(i)">
+          <i
+            [class]="
+              'result-item-link-icon bi bi-' + getResultType(item.class)['icon']
+            "
+          ></i
+          >{{ item.display_name }}
+        </p>
+      </div>
     </div>
     <p class="placeholder-glow" *ngIf="searching">
       <span class="placeholder col-7"></span>
@@ -21,53 +39,99 @@
     </p>
   </div>
   <div class="col-3 mt-4" *ngIf="selectedBuilding">
-    <i class="bi bi-chevron-left back-icon" (click)="selectedBuilding = null;"></i>
+    <i
+      class="bi bi-chevron-left back-icon"
+      (click)="selectedBuilding = null"
+    ></i>
     <!-- TODO cambiar edificio por tipo de elemento -->
-    <h4 class="mt-3 mb-3"><i [class]="'resultLinkIcon bi bi-' + getResultType(selectedBuilding.category)['icon']"></i> {{ 'SEARCH.DETAIL.CATEGORIES.INFO' | transloco }} {{ getResultType(selectedBuilding.category)['text'] }}</h4>
-    <mat-list class="building-info-table" *ngIf="selectedBuilding.category === 'building'">
+    <h4 class="mt-3 mb-3">
+      <i
+        [class]="
+          'resultLinkIcon bi bi-' +
+          getResultType(selectedBuilding.category)['icon']
+        "
+      ></i>
+      {{ "SEARCH.DETAIL.CATEGORIES.INFO" | transloco }}
+      {{ getResultType(selectedBuilding.category)["text"] }}
+    </h4>
+    <mat-list
+      class="building-info-table"
+      *ngIf="selectedBuilding.category === 'building'"
+    >
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.STREET' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.STREET" | transloco }}: </b>
         <span>{{ selectedBuilding.addresstags.street }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.NUMBER' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.NUMBER" | transloco }}: </b>
         <span>{{ selectedBuilding.addresstags.housenumber }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.CITY' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.CITY" | transloco }}: </b>
         <span>{{ selectedBuilding.addresstags.city }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.POSTAL_CODE' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.POSTAL_CODE" | transloco }}: </b>
         <span>{{ selectedBuilding.addresstags.postcode }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.FLOORS' | transloco }}: </b>
-        <span>{{ selectedBuilding.extratags['building:levels'] }}</span>
+        <b>{{ "SEARCH.DETAIL.TABLE.FLOORS" | transloco }}: </b>
+        <span>{{ selectedBuilding.extratags["building:levels"] }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.GARAGE_FLOORS' | transloco }}: </b>
-        <span>{{ selectedBuilding.extratags['building:levels:underground'] }}</span>
+        <b>{{ "SEARCH.DETAIL.TABLE.GARAGE_FLOORS" | transloco }}: </b>
+        <span>{{
+          selectedBuilding.extratags["building:levels:underground"]
+        }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.DESCRIPTION' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.DESCRIPTION" | transloco }}: </b>
         <span>{{ selectedBuilding.extratags.description }}</span>
       </mat-list-item>
       <mat-list-item>
-        <b>{{ 'SEARCH.DETAIL.TABLE.HEIGHT' | transloco }}: </b>
+        <b>{{ "SEARCH.DETAIL.TABLE.HEIGHT" | transloco }}: </b>
         <span>{{ selectedBuilding.extratags.height }}</span>
       </mat-list-item>
-     </mat-list>
-    <table class="table building-info-table" *ngIf="selectedBuilding.category === 'highway'">
+    </mat-list>
+    <table
+      class="table building-info-table"
+      *ngIf="selectedBuilding.category === 'highway'"
+    >
       <tbody>
         <tr *ngFor="let item of selectedBuilding.address">
-          <th>{{ item.rank_address !== 4 ? dataHeaders[item.rank_address] : item.type === 'country' ? ( 'SEARCH.DETAIL.HEADERS.COUNTRY' | transloco ) : ( 'SEARCH.DETAIL.HEADERS.COUNTRY_ABBREVIATED' | transloco ) }}</th>
+          <th>
+            {{
+              item.rank_address !== 4
+                ? dataHeaders[item.rank_address]
+                : item.type === "country"
+                ? ("SEARCH.DETAIL.HEADERS.COUNTRY" | transloco)
+                : ("SEARCH.DETAIL.HEADERS.COUNTRY_ABBREVIATED" | transloco)
+            }}
+          </th>
           <td>{{ item.localname }}</td>
         </tr>
       </tbody>
     </table>
-    <button *ngIf="hasIFC && selectedBuilding.category === 'building'" class="btn btn-primary btn-small w-100 mt-3" [routerLink]="'/visualizer/' + selectedBuilding.osm_id">{{ 'SEARCH.DETAIL.BUTTONS.SEE' | transloco }}</button>
-    <button *ngIf="selectedBuilding.category === 'building'" class="btn btn-warning btn-small w-100 mt-3" (click)="putIFC(selectedBuilding.osm_id)">{{ hasIFC ? ('SEARCH.DETAIL.BUTTONS.EDIT' | transloco) : ('SEARCH.DETAIL.BUTTONS.ADD' | transloco) }}</button>
+    <button 
+      mat-raised-button
+      *ngIf="hasIFC && selectedBuilding.category === 'building'"
+      class="w-100 mt-3"
+      [routerLink]="'/visualizer/' + selectedBuilding.osm_id"
+    >
+    {{ "SEARCH.DETAIL.BUTTONS.SEE" | transloco }}
+    </button>
+    <button 
+      mat-raised-button color="primary"
+      *ngIf="selectedBuilding.category === 'building'"
+      class="w-100 mt-3"
+      (click)="putIFC(selectedBuilding.osm_id)"
+    >
+      {{
+        hasIFC
+          ? ("SEARCH.DETAIL.BUTTONS.EDIT" | transloco)
+          : ("SEARCH.DETAIL.BUTTONS.ADD" | transloco)
+      }}
+    </button>
   </div>
   <div class="col-8 map-container">
     <div class="map-container-frame">

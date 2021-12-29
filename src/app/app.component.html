@@ -3,17 +3,17 @@
     <mat-icon>menu</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item>
+    <button mat-menu-item routerLink="home">
       <mat-icon>home</mat-icon>
-      <span routerLink="home">{{ "COMMON.MENU.HOME" | transloco }}</span>
+      <span>{{ "COMMON.MENU.HOME" | transloco }}</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item routerLink="search">
       <mat-icon>map</mat-icon>
-      <span routerLink="search">{{ "COMMON.MENU.SEARCH" | transloco }}</span>
+      <span>{{ "COMMON.MENU.SEARCH" | transloco }}</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item routerLink="visualizer">
       <mat-icon>3d_rotation</mat-icon>
-      <span routerLink="visualizer">{{ "COMMON.MENU.VISUALIZER" | transloco }}</span>
+      <span>{{ "COMMON.MENU.VISUALIZER" | transloco }}</span>
     </button>
   </mat-menu>
   <span>TFM Viqui</span>
