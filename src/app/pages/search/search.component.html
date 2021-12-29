@@ -1,11 +1,10 @@
-<!-- <div class="map" leaflet [leafletOptions]="options"></div> -->
 <div class="row">
   <div class="col-3 mt-4" *ngIf="!selectedBuilding">
     <div class="input-group mb-3">
       <input
         type="text"
         class="form-control"
-        placeholder="Buscar direcciones..."
+        [placeholder]="('SEARCH.FORM.INPUT_PLACEHOLDER' | transloco)"
         #searchText
         (keyup)="searchInput($event, searchText.value)"
       />
@@ -15,7 +14,7 @@
           type="button"
           (click)="search(searchText.value)"
         >
-          Buscar
+          {{ 'SEARCH.FORM.BUTTON' | transloco }}
         </button>
       </div>
     </div>

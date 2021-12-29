@@ -1,10 +1,29 @@
 {
-    "HOME": {
-        "TITLE": "Example to use i18n with Transloco in Angular"
+    "COMMON": {
+        "MENU": {
+            "HOME": "Home",
+            "SEARCH": "Search",
+            "VISUALIZER": "Visualizer"
+        },
+        "LANGUAGE": {
+            "ES": "Spanish",
+            "EN": "English",
+            "VAL": "Valencian"
+        }
     },
-    "LANGUAGE": {
-        "ES": "Spanish",
-        "EN": "English",
-        "VAL": "Valencian"
-    }
+    "HOME": {
+        "TITLE": "Example d'i18n amb Transloco en Angular"
+    },
+    "SEARCH": {
+        "FORM": {
+            "INPUT_PLACEHOLDER": "Search directions...",
+            "BUTTON": "Search"
+        },
+        "DETAIL": {
+            "CATEGORIES": {
+                "BUILDING": "of the building",
+                "HIGHWAY": "of the street"
+            }
+        }
+    }    
 }

@@ -12,7 +12,7 @@ export class AppComponent {
   constructor(private translocoService: TranslocoService) {
     this.selectLanguage();
   }
-
+d
   selectLanguage(language: string = this.selectLang) {
     this.translocoService.setActiveLang(language);
   }

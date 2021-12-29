@@ -1,10 +1,29 @@
 {
+    "COMMON": {
+        "MENU": {
+            "HOME": "Inici",
+            "SEARCH": "Cerca",
+            "VISUALIZER": "Visualitzador"
+        },
+        "LANGUAGE": {
+            "ES": "Espanyol",
+            "EN": "Anglés",
+            "VAL": "Valencià"
+        }
+    },
     "HOME": {
         "TITLE": "Exemple d'i18n amb Transloco en Angular"
     },
-    "LANGUAGE": {
-        "ES": "Espanyol",
-        "EN": "Anglés",
-        "VAL": "Valencià"
-    }
+    "SEARCH": {
+        "FORM": {
+            "INPUT_PLACEHOLDER": "Cerca direccions...",
+            "BUTTON": "Cerca"
+        },
+        "DETAIL": {
+            "CATEGORIES": {
+                "BUILDING": "de l'edifici",
+                "HIGHWAY": "del carrer"
+            }
+        }
+    }    
 }

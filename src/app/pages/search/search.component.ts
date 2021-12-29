@@ -9,6 +9,7 @@ import {
   SearchResult,
   DetailResult,
 } from 'src/app/services/api/nominatim/nominatim.service';
+import { TranslocoService } from '@ngneat/transloco';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -75,7 +76,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
   constructor(
     private markerService: MarkerService,
     private nominatimService: NominatimService,
-    private popupService: PopupService
+    private popupService: PopupService,
+    private translocoService: TranslocoService
   ) {}
 
   ngOnInit(): void {}

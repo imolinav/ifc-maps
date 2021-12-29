@@ -1,10 +1,29 @@
 {
+    "COMMON": {
+        "MENU": {
+            "HOME": "Inicio",
+            "SEARCH": "Buscar",
+            "VISUALIZER": "Visualizador"
+        },
+        "LANGUAGE": {
+            "ES": "Español",
+            "EN": "Inglés",
+            "VAL": "Valenciano"
+        }
+    },
     "HOME": {
         "TITLE": "Ejemplo de i18n con Transloco en Angular"
     },
-    "LANGUAGE": {
-        "ES": "Español",
-        "EN": "Inglés",
-        "VAL": "Valenciano"
-    }
+    "SEARCH": {
+        "FORM": {
+            "INPUT_PLACEHOLDER": "Buscar direcciones...",
+            "BUTTON": "Buscar"
+        },
+        "DETAIL": {
+            "CATEGORIES": {
+                "BUILDING": "del edificio",
+                "HIGHWAY": "de la calle"
+            }
+        }
+    }    
 }
