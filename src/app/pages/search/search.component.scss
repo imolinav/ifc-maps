@@ -1,49 +1,115 @@
-/* .map {
-    height: 100%;
-    padding: 0;
-}
- */
-
 .map-container {
   position: absolute;
-  top: 56px;
+  top: 64px;
+  left: 0;
   right: 0;
   bottom: 0;
-  margin: 30px;
   &-frame {
-    border: 2px solid black;
-    height: calc(100% - 56px);
+    border-top: 1px solid black;
+    height: 100%;
     #map {
       height: 100%;
     }
   }
 }
 
-.placeholder-glow {
-  padding-left: 5px;
-  margin-top: 25px;
+.search {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  z-index: 400;
+  width: 25%;
+  height: calc(100% - 64px);
+  padding: 15px 10px;
+  border-top: 1px solid black;
+  &.search-done {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: white;
+    & .search-group-input {
+      box-shadow: none;
+    }
+  }
+  &-group {
+    position: relative;
+    &-input {
+      border-radius: 7px;
+      padding-right: 45px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    &-icon {
+      position: absolute;
+      top: 6px;
+      right: 5px;
+      border: none;
+      background-color: transparent;
+    }
+  }
+  &-result {
+    padding-left: 5px;
+    &-item {
+      margin-top: 25px;
+      &-link {
+        cursor: pointer;
+        &:hover {
+          color: rgb(255, 145, 0);
+        }
+        &-icon {
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+  &-loading {
+    .placeholder-glow {
+      padding-left: 5px;
+      margin-top: 25px;
+    }
+  }
 }
+
+.interaction {
+  position: absolute;
+  bottom: 25px;
+  right: 10px;
+  z-index: 400;
+  display: grid;
+  &-locate {
+    border-radius: 7px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+  &-zoom {
+    border-radius: 7px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    &-in {
+      border-radius: 7px 7px 0 0;
+    }
+    &-out {
+      border-radius: 0 0 7px 7px;
+    }
+    & hr {
+      margin: 0;
+    }
+  }
+  &-button {
+    border: none;
+    &-icon {
+      font-size: 15px;
+      font-weight: bold;
+      height: 15px;
+      width: 15px;
+      margin-top: 5px;
+    }
+  }
+}
+
 
 .back-icon {
   font-size: 25px;
   cursor: pointer;
 }
 
-.result {
-  padding-left: 5px;
-  &-item {
-    margin-top: 25px;
-    &-link {
-      cursor: pointer;
-      &:hover {
-        color: rgb(255, 145, 0);
-      }
-      &-icon {
-        margin-right: 6px;
-      }
-    }
-  }
-}
+
 
 .building-info-table {
   span {

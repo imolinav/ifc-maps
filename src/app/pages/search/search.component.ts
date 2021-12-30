@@ -57,13 +57,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.map = Leaflet.map('map', {
       center: [this.lat, this.lon],
       zoom: this.zoom,
-      attributionControl: false,
+      zoomControl: false
     });
 
     const tiles = Leaflet.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
-        maxZoom: 20,
+        maxZoom: 19,
         minZoom: 3,
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -101,7 +101,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  goTo(i: number) {
+  resultDetail(i: number) {
     if (this.resultShape) {
       this.map.removeLayer(this.resultShape);
     }
@@ -164,5 +164,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
       default:
         return { text: '', icon: '' }
     }
+  }
+
+  zoomIn() {
+    this.map.zoomIn();
+    this.zoom++;
+  }
+
+   zoomOut() {
+    this.map.zoomOut();
+    this.zoom--;
+  }
+
+  localize() {
+    this.map.locate({ setView: true });
   }
 }
