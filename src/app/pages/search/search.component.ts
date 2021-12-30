@@ -48,7 +48,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     10: 'Provincia',
     8: 'Comunidad autónoma',
     5: 'Código postal',
-    4: 'País'
+    4: 'País',
   };
 
   private map: Leaflet.Map;
@@ -57,7 +57,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.map = Leaflet.map('map', {
       center: [this.lat, this.lon],
       zoom: this.zoom,
-      zoomControl: false
+      zoomControl: false,
     });
 
     const tiles = Leaflet.tileLayer(
@@ -89,15 +89,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   search(searchText: string) {
     this.searching = true;
-    this.nominatimService.search(searchText).subscribe((res: SearchResult[]) => {
-      this.searching = false;
-      this.searchResult = res;
-    });
+    this.nominatimService
+      .search(searchText)
+      .subscribe((res: SearchResult[]) => {
+        this.searching = false;
+        if (res.length > 0) {
+          console.log(res);
+          this.searchResult = res;
+        }
+      });
   }
 
   searchInput(event: KeyboardEvent, searchText: string) {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && searchText !== '') {
       this.search(searchText);
+    } else if (searchText === '') {
+      this.searchResult = null;
     }
   }
 
@@ -141,6 +148,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
           ],
           19
         );
+        this.zoom = 19;
       });
   }
 
@@ -155,14 +163,38 @@ export class SearchComponent implements OnInit, AfterViewInit {
     return '';
   }
 
-  getResultType(category: string) {
-    switch (category) {
-      case 'building':
-        return { text: this.translocoService.translate('SEARCH.DETAIL.CATEGORIES.BUILDING'), icon: 'building' };
-      case 'highway':
-        return { text: this.translocoService.translate('SEARCH.DETAIL.CATEGORIES.HIGHWAY'), icon: 'distribute-horizontal' };
+  getResultType(type: string) {
+    switch (type) {
+      case 'yes':
+        return {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.BUILDING'
+          ),
+          icon: 'location_city',
+        };
+      case 'motorway':
+        return {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
+          ),
+          icon: 'directions_car',
+        };
+      case 'administrative':
+        return {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
+          ),
+          icon: 'outlined_flag',
+        };
+      case 'suburb':
+        return {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
+          ),
+          icon: 'place',
+        };
       default:
-        return { text: '', icon: '' }
+        return { text: '', icon: '' };
     }
   }
 
@@ -171,7 +203,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.zoom++;
   }
 
-   zoomOut() {
+  zoomOut() {
     this.map.zoomOut();
     this.zoom--;
   }

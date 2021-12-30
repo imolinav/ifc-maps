@@ -34,13 +34,8 @@
       *ngFor="let item of searchResult; index as i"
     >
       <p class="search-result-item-link" (click)="resultDetail(i)">
-        <i
-          [class]="
-            'search-result-item-link-icon bi bi-' +
-            getResultType(item.class)['icon']
-          "
-        ></i
-        >{{ item.display_name }}
+        <mat-icon class="search-result-item-link-icon">{{ getResultType(item.type)['icon'] }}</mat-icon>
+        {{ item.display_name }}
       </p>
     </div>
   </div>
@@ -57,20 +52,19 @@
 
   <!-- TODO redo all this (logic + layout) -->
   <div class="search-detail" *ngIf="selectedBuilding">
-    <i
-      class="bi bi-chevron-left back-icon"
+    <mat-icon class="search-detail-back" (click)="selectedBuilding = null">chevron_left</mat-icon>
+    <!-- <i
+      class="bi bi-chevron-left search-detail-back"
       (click)="selectedBuilding = null"
-    ></i>
+    ></i> -->
     <h4 class="mt-3 mb-3">
-      <i
-        [class]="
-          'resultLinkIcon bi bi-' +
-          getResultType(selectedBuilding.category)['icon']
-        "
-      ></i>
+      <mat-icon>{{ getResultType(selectedBuilding.category)['icon'] }}</mat-icon>
       {{ "SEARCH.DETAIL.CATEGORIES.INFO" | transloco }}
       {{ getResultType(selectedBuilding.category)["text"] }}
     </h4>
+    <div class="search-detail-info">
+
+    </div>
     <mat-list
       class="building-info-table"
       *ngIf="selectedBuilding.category === 'building'"

@@ -10,9 +10,7 @@ export class PopupService {
     return (
       `` +
       `<div><b>Edificio:</b> ${data.title}</div>` +
-      `<div><b>Tipo:</b> ${data.description}</div>` +
-      `<div><b>Año:</b> ${data.year}</div>` +
-      `<div style="text-align: center;"><img style="max-width: 100%; max-height: 200px;" src="${data.image}"></div>`
+      `<div><b>Tipo:</b> ${data.description}</div>`
     );
   }
 
