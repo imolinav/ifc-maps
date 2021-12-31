@@ -144,7 +144,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
           ],
           19
         ).on('zoomend', () => {
-          this.resultShape.addTo(this.map);
+          if(this.resultShape) {
+            this.resultShape.addTo(this.map);
+          }
         });
         this.zoom = 19;
         
@@ -200,6 +202,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   localize() {
     this.map.locate({ setView: true });
+  }
+
+  goBack() {
+    this.selectedBuilding = null;
+    this.map.removeLayer(this.resultShape);
+    this.resultShape = null;
   }
 
   private createMarkers(map: Leaflet.Map) {
