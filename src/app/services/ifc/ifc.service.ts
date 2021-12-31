@@ -1,5 +1,15 @@
 import { DoubleSide, MeshLambertMaterial } from 'three';
-import { LoaderSettings, IFCSPACE, IFCWALL, IFCSTAIR, IfcSpace, IfcWall, IfcStair } from 'web-ifc';
+import {
+  LoaderSettings,
+  IFCSPACE,
+  IFCWALL,
+  IFCSTAIR,
+  IFCCOLUMN,
+  IfcSpace,
+  IfcWall,
+  IfcStair,
+  IfcColumn,
+} from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
 
 export class IfcService {
@@ -7,11 +17,19 @@ export class IfcService {
   ifcViewer?: IfcViewerAPI;
   container?: HTMLElement;
   modelId: number;
-  spaces: IfcStair[];
+  spaces: (IfcWall | IfcColumn | IfcStair)[];
   spacesPromise: Promise<IfcStair[]>;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
-  webConfig: LoaderSettings = { COORDINATE_TO_ORIGIN: true, USE_FAST_BOOLS: false };
+  webConfig: LoaderSettings = {
+    COORDINATE_TO_ORIGIN: true,
+    USE_FAST_BOOLS: false,
+  };
+  spacesTypes = [
+    { type: 'wall', obj: IFCWALL },
+    { type: 'stair', obj: IFCSTAIR },
+    { type: 'column', obj: IFCCOLUMN },
+  ];
 
   constructor() {
     this.onSelectActions = [];
@@ -27,12 +45,12 @@ export class IfcService {
 
   setupIfcScene() {
     if (!this.container) return;
-    const preselectMaterial = this.newMaterial(0xFBC02D, 0.2);
-    const selectMaterial = this.newMaterial(0xFBC02D, 0.5);
+    const preselectMaterial = this.newMaterial(0xfbc02d, 0.2);
+    const selectMaterial = this.newMaterial(0xfbc02d, 0.5);
     this.ifcViewer = new IfcViewerAPI({
       container: this.container,
       preselectMaterial,
-      selectMaterial
+      selectMaterial,
     });
     this.ifcViewer.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer.IFC?.applyWebIfcConfig(this.webConfig);
@@ -55,7 +73,7 @@ export class IfcService {
 
   async loadIfcUrl(url: string) {
     await this.ifcViewer?.IFC.loadIfcUrl(url, false, (event) => {
-      const progress = event.loaded / event.total * 100;
+      const progress = (event.loaded / event.total) * 100;
       console.log(`Progress: ${progress}%`);
     }).then((res) => {
       console.log(res);
@@ -70,8 +88,19 @@ export class IfcService {
     this.onSelectActions.forEach((action) => action(modelID, expressID));
   }
 
-  async getSpaces() {
-    return await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(0, IFCSTAIR, true);
+  async getSpaces(type: string) {
+    let obj: number;
+    for (let item of this.spacesTypes) {
+      if (item.type === type) {
+        obj = item.obj;
+        break;
+      }
+    }
+    return await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
+      0,
+      obj,
+      true
+    );
   }
 
   async pick() {
@@ -80,9 +109,7 @@ export class IfcService {
     this.select(found.modelID, found.id, false);
   }
 
-  private handleClick = (_event: Event) => {
-
-  };
+  private handleClick = (_event: Event) => {};
 
   private handleDoubleClick = async (event: Event) => {
     await this.pick();
@@ -102,7 +129,7 @@ export class IfcService {
       opacity,
       transparent: true,
       depthTest: false,
-      side: DoubleSide
+      side: DoubleSide,
     });
   }
 
@@ -120,5 +147,9 @@ export class IfcService {
 
   removeHighlight() {
     this.ifcViewer?.IFC.unHighlightIfcItems();
+  }
+
+  toggleTransparency(on: boolean) {
+    this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, 0.1, true);
   }
 }

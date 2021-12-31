@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
     <div class="row">
         <div class="col-2">
             <div *ngIf="spaces && spaces.length > 0" class="model-items">
@@ -9,7 +9,38 @@
             </div>
         </div>
         <div class="col-10">
-            <div #threeContainer id="viewer-container"></div>
+        </div>
+    </div>
+</div> -->
+<div class="elements" *ngIf="spaces">
+    <div class="elements-header" (click)="expandElements()">
+        <h3>Elementos</h3>
+        <mat-icon>{{ elementsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </div>
+    <div class="elements-body" [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'">
+        <div class="elements-body-search">
+            <select class="form-select" aria-label="Default select example" #spaceType (change)="getSpaces(spaceType.value)">
+                <option selected>Open this select menu</option>
+                <option value="stair" selected>Escaleras</option>
+                <option value="wall">Paredes</option>
+                <option value="column">Pilares</option>
+            </select>
+        </div>
+        <div *ngIf="spaces && spaces.length > 0" class="elements-body-items">
+            <p class="elements-body-items-item" *ngFor="let item of spaces" [class]="item.expressID === itemSelected ? 'selected' : ''" (mouseover)="highlightElement(item.expressID, true)" (click)="selectElement(item.expressID)" (mouseout)="highlightElement(item.expressID, false)">{{ item.Name.value }}</p>
+        </div>
+    </div>
+    <div class="elements-header" (click)="expandOptions()">
+        <h3>Opciones</h3>
+        <mat-icon>{{ optionsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </div>
+    <div class="elements-body" [ngClass]="optionsExpanded ? '' : 'element-body-collapsed'">
+        <div class="elements-body-search">
+            <mat-checkbox class="example-margin" [checked]="transparent" (change)="toggleTransparency()">Transparencia</mat-checkbox>
         </div>
     </div>
 </div>
+<div class="tools">
+    
+</div>
+<div #threeContainer class="viewer"></div>

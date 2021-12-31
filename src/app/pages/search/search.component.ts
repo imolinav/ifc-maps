@@ -209,7 +209,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         icon: 'place',
       };
     }
-    console.log(result);
     return result;
   }
 

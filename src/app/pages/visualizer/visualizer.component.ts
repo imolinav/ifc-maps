@@ -1,4 +1,10 @@
-import { AfterContentInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
 import { IfcSpace, IfcStair, IfcWall } from 'web-ifc';
@@ -6,27 +12,29 @@ import { IfcSpace, IfcStair, IfcWall } from 'web-ifc';
 @Component({
   selector: 'app-visualizer',
   templateUrl: './visualizer.component.html',
-  styleUrls: ['./visualizer.component.scss']
+  styleUrls: ['./visualizer.component.scss'],
 })
 export class VisualizerComponent implements OnInit, AfterContentInit {
-
   ifcId: string;
-  spaces: IfcStair[];
+  spaces: (IfcStair | IfcSpace | IfcWall)[];
   itemSelected: number;
   loading = false;
+  elementsExpanded = true;
+  optionsExpanded = false;
+  transparent: boolean = true;
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
 
-  constructor(private ifcService: IfcService, private route: ActivatedRoute) { }
+  constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(res => {
+    this.route.params.subscribe((res) => {
       this.ifcId = res['id'];
-    })
+    });
   }
 
   async ngAfterContentInit() {
-    if(this.ifcId) { 
+    if (this.ifcId) {
       this.loadModel(`assets/ifc/${this.ifcId}.ifc`);
     }
   }
@@ -34,13 +42,17 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   async loadModel(url: string) {
     this.loading = true;
     const container = this.getContainer();
-    if(container) { 
+    if (container) {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
       // TODO: check this Promise so it doesn't block the previous one
-      this.spaces = await this.ifcService.getSpaces();
+      this.spaces = await this.ifcService.getSpaces('stair');
     }
     this.loading = false;
+  }
+
+  async getSpaces(type: string) {
+    this.spaces = await this.ifcService.getSpaces(type);
   }
 
   private getContainer() {
@@ -49,7 +61,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   highlightElement(elementId: number, on: boolean) {
-    if(on) {
+    if (on) {
       this.ifcService.highlightElement(elementId);
     } else {
       this.ifcService.removeHighlight();
@@ -57,7 +69,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   selectElement(elementId: number) {
-    if(this.itemSelected && this.itemSelected === elementId) {
+    if (this.itemSelected && this.itemSelected === elementId) {
       this.ifcService.unselectElement();
       this.itemSelected = null;
     } else {
@@ -72,4 +84,18 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.loadModel(ifcUrl);
   }
 
+  expandElements() {
+    this.optionsExpanded = false;
+    this.elementsExpanded = !this.elementsExpanded;
+  }
+
+  expandOptions() {
+    this.elementsExpanded = false;
+    this.optionsExpanded = !this.optionsExpanded;
+  }
+
+  toggleTransparency() {
+    this.transparent = !this.transparent;
+    this.ifcService.toggleTransparency(this.transparent);
+  }
 }
