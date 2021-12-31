@@ -49,6 +49,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
     5: 'Código postal',
     4: 'País',
   };
+  resultTypes: { 
+    type: string; 
+    data: { 
+      text: string; 
+      icon: string 
+    }
+  }[];
 
   private map: Leaflet.Map;
 
@@ -82,7 +89,37 @@ export class SearchComponent implements OnInit, AfterViewInit {
     private httpClient: HttpClient
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.resultTypes = [
+      {
+        type: 'building',
+        data: {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.BUILDING'
+          ),
+          icon: 'location_city',
+        },
+      },
+      {
+        type: 'highway',
+        data: {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
+          ),
+          icon: 'directions_car',
+        },
+      },
+      {
+        type: 'natural',
+        data: {
+          text: this.translocoService.translate(
+            'SEARCH.DETAIL.CATEGORIES.NATURE'
+          ),
+          icon: 'nature_people',
+        },
+      },
+    ];
+  }
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -137,19 +174,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
         // TODO check on server if IFC exists and wrap rest of function on subscribe
         this.hasIFC = true;
         this.resultShape = Leaflet.polygon(coordinates, { color: 'red' });
-        this.map.flyTo(
-          [
-            this.selectedBuilding.centroid.coordinates[1],
-            this.selectedBuilding.centroid.coordinates[0],
-          ],
-          19
-        ).on('zoomend', () => {
-          if(this.resultShape) {
-            this.resultShape.addTo(this.map);
-          }
-        });
+        this.map
+          .flyTo(
+            [
+              this.selectedBuilding.centroid.coordinates[1],
+              this.selectedBuilding.centroid.coordinates[0],
+            ],
+            19
+          )
+          .on('zoomend', () => {
+            if (this.resultShape) {
+              this.resultShape.addTo(this.map);
+            }
+          });
         this.zoom = 19;
-        
       });
   }
 
@@ -158,38 +196,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   getResultType(type: string) {
-    switch (type) {
-      case 'yes':
-        return {
-          text: this.translocoService.translate(
-            'SEARCH.DETAIL.CATEGORIES.BUILDING'
-          ),
-          icon: 'location_city',
-        };
-      case 'motorway':
-        return {
-          text: this.translocoService.translate(
-            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
-          ),
-          icon: 'directions_car',
-        };
-      case 'administrative':
-        return {
-          text: this.translocoService.translate(
-            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
-          ),
-          icon: 'outlined_flag',
-        };
-      case 'suburb':
-        return {
-          text: this.translocoService.translate(
-            'SEARCH.DETAIL.CATEGORIES.HIGHWAY'
-          ),
-          icon: 'place',
-        };
-      default:
-        return { text: '', icon: '' };
+    let result: { text: string; icon: string };
+    for (let item of this.resultTypes) {
+      if (item.type === type) {
+        result = item.data;
+        break;
+      }
     }
+    if (!result) {
+      result = {
+        text: this.translocoService.translate('SEARCH.DETAIL.CATEGORIES.PLACE'),
+        icon: 'place',
+      };
+    }
+    console.log(result);
+    return result;
   }
 
   zoomIn() {
@@ -217,7 +238,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         const lat = c.geometry.coordinates[1];
         const marker = Leaflet.marker([lat, lon]);
         marker.addEventListener('click', () => {
-          console.log(c);
           this.resultDetail(c.properties.id);
         });
         marker.addTo(map);

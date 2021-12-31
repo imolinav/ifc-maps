@@ -23,7 +23,9 @@
             "CATEGORIES": {
                 "INFO": "Info",
                 "BUILDING": "of the building",
-                "HIGHWAY": "of the street"
+                "HIGHWAY": "of the street",
+                "NATURE": "of the natural space",
+                "PLACE": "of the place"
             },
             "TABLE": {
                 "STREET": "Street",

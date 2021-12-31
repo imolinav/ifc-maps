@@ -23,7 +23,9 @@
             "CATEGORIES": {
                 "INFO": "Informació",
                 "BUILDING": "de l'edifici",
-                "HIGHWAY": "del carrer"
+                "HIGHWAY": "del carrer",
+                "NATURE": "del espai natural",
+                "PLACE": "del lloc"
             },
             "TABLE": {
                 "STREET": "Carrer",

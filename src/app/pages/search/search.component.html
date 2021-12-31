@@ -31,10 +31,10 @@
   >
     <div
       class="search-result-item"
-      *ngFor="let item of searchResult; index as i"
+      *ngFor="let item of searchResult"
     >
       <p class="search-result-item-link" (click)="resultDetail(item.osm_id, item.osm_type, item.class)">
-        <mat-icon class="search-result-item-link-icon">{{ getResultType(item.type)['icon'] }}</mat-icon>
+        <mat-icon class="search-result-item-link-icon">{{ getResultType(item.class)['icon'] }}</mat-icon>
         {{ item.display_name }}
       </p>
     </div>
