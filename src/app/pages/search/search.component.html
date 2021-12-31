@@ -6,7 +6,7 @@
 
 <div
   class="search"
-  [ngClass]="searchResult || searching ? 'search-done' : ''"
+  [ngClass]="searchResult || searching || selectedBuilding ? 'search-done' : ''"
 >
   <div class="search-group" *ngIf="!selectedBuilding">
     <input
@@ -33,7 +33,7 @@
       class="search-result-item"
       *ngFor="let item of searchResult; index as i"
     >
-      <p class="search-result-item-link" (click)="resultDetail(i)">
+      <p class="search-result-item-link" (click)="resultDetail(item.osm_id, item.osm_type, item.class)">
         <mat-icon class="search-result-item-link-icon">{{ getResultType(item.type)['icon'] }}</mat-icon>
         {{ item.display_name }}
       </p>

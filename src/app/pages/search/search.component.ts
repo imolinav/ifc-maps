@@ -1,15 +1,13 @@
 // TODO add/update IFC model
-// TODO popup
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import * as Leaflet from 'leaflet';
-import { MarkerService } from 'src/app/services/leaflet/marker/marker.service';
-import { PopupService } from 'src/app/services/leaflet/popup/popup.service';
 import {
   NominatimService,
   SearchResult,
   DetailResult,
 } from 'src/app/services/api/nominatim/nominatim.service';
 import { TranslocoService } from '@ngneat/transloco';
+import { HttpClient } from '@angular/common/http';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -24,6 +22,7 @@ const iconDefault = Leaflet.icon({
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41],
 });
+const valenciaData = '../../../assets/data/valencia/points.geojson';
 Leaflet.Marker.prototype.options.icon = iconDefault;
 
 @Component({
@@ -62,7 +61,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     Leaflet.control.scale().addTo(this.map);
     this.map.addEventListener('zoom', (event) => {
       this.zoom = event.target._zoom;
-    })
+    });
     const tiles = Leaflet.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -74,20 +73,19 @@ export class SearchComponent implements OnInit, AfterViewInit {
     );
 
     tiles.addTo(this.map);
+    this.createMarkers(this.map);
   }
 
   constructor(
-    private markerService: MarkerService,
     private nominatimService: NominatimService,
-    private popupService: PopupService,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
+    private httpClient: HttpClient
   ) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.markerService.createMarkers(this.map);
   }
 
   search(searchText: string) {
@@ -111,16 +109,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  resultDetail(i: number) {
+  resultDetail(osmId: number, osmType?: string, classType?: string) {
+    if (!osmType) {
+      osmType = 'way';
+    }
+    if (!classType) {
+      classType = 'building';
+    }
     if (this.resultShape) {
       this.map.removeLayer(this.resultShape);
     }
     this.nominatimService
-      .details(
-        this.getOsmType(this.searchResult[i].osm_type),
-        this.searchResult[i].osm_id,
-        this.searchResult[i].class
-      )
+      .details(this.getOsmType(osmType), osmId, classType)
       .subscribe((res: DetailResult) => {
         this.selectedBuilding = res;
 
@@ -137,33 +137,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
         // TODO check on server if IFC exists and wrap rest of function on subscribe
         this.hasIFC = true;
         this.resultShape = Leaflet.polygon(coordinates, { color: 'red' });
-        this.resultShape.on('click', () => {
-          // ? Popup with info ?
-          // TODO fix open on second click
-          const popup = this.popupService.createPopupIFC(true, res.osm_id);
-          this.resultShape.bindPopup(popup);
-        });
-        this.resultShape.addTo(this.map);
         this.map.flyTo(
           [
             this.selectedBuilding.centroid.coordinates[1],
             this.selectedBuilding.centroid.coordinates[0],
           ],
           19
-        );
+        ).on('zoomend', () => {
+          this.resultShape.addTo(this.map);
+        });
         this.zoom = 19;
+        
       });
   }
 
   putIFC(id: number) {
     console.log(id);
-  }
-
-  private getOsmType(type: string) {
-    if (type === 'way') {
-      return 'W';
-    }
-    return '';
   }
 
   getResultType(type: string) {
@@ -211,5 +200,27 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   localize() {
     this.map.locate({ setView: true });
+  }
+
+  private createMarkers(map: Leaflet.Map) {
+    this.httpClient.get(valenciaData).subscribe((res: any) => {
+      for (const c of res.features) {
+        const lon = c.geometry.coordinates[0];
+        const lat = c.geometry.coordinates[1];
+        const marker = Leaflet.marker([lat, lon]);
+        marker.addEventListener('click', () => {
+          console.log(c);
+          this.resultDetail(c.properties.id);
+        });
+        marker.addTo(map);
+      }
+    });
+  }
+
+  private getOsmType(type: string) {
+    if (type === 'way') {
+      return 'W';
+    }
+    return '';
   }
 }
