@@ -41,6 +41,11 @@
                 "glob": "*.svg",
                 "input": "node_modules/bootsrap-icons",
                 "output": "/"
+              },
+              {
+                "glob": "*.wasm",
+                "input": "node_modules/web-ifc",
+                "output": "./assets/wasm"
               }
             ],
             "styles": [
