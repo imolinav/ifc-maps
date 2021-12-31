@@ -59,7 +59,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
       zoom: this.zoom,
       zoomControl: false,
     });
-
+    Leaflet.control.scale().addTo(this.map);
+    this.map.addEventListener('zoom', (event) => {
+      this.zoom = event.target._zoom;
+    })
     const tiles = Leaflet.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -200,12 +203,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   zoomIn() {
     this.map.zoomIn();
-    this.zoom++;
   }
 
   zoomOut() {
     this.map.zoomOut();
-    this.zoom--;
   }
 
   localize() {
