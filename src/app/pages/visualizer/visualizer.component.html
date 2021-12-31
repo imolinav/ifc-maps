@@ -1,17 +1,13 @@
-<!-- <div class="container-fluid">
-    <div class="row">
-        <div class="col-2">
-            <div *ngIf="spaces && spaces.length > 0" class="model-items">
-                <p class="model-items-item" *ngFor="let item of spaces" [class]="item.expressID === itemSelected ? 'selected' : ''" (mouseover)="highlightElement(item.expressID, true)" (click)="selectElement(item.expressID)" (mouseout)="highlightElement(item.expressID, false)">{{ item.Name.value }}</p>
-            </div>
-            <div *ngIf="!spaces && !loading">
-                <input type="file" name="load" id="file-input" (change)="readModel($event)">
-            </div>
-        </div>
-        <div class="col-10">
+<div class="loading" *ngIf="loading">
+    <div class="loading-sphere">
+        <div class="spinner-grow text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-</div> -->
+    <div class="loading-message">
+        <h2>Cargando modelo...</h2>
+    </div>
+</div>
 <div class="elements" *ngIf="spaces">
     <div class="elements-header" (click)="expandElements()">
         <h3>Elementos</h3>

@@ -21,6 +21,33 @@
   border-top: 1px solid black;
 }
 
+.loading {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  &-sphere {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    .spinner-grow {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  &-message {
+    position: absolute;
+    top: calc(50% + 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+  }
+}
+
 .elements {
   position: absolute;
   z-index: 1;
