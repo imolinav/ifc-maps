@@ -45,7 +45,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (container) {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
-      // TODO: check this Promise so it doesn't block the previous one
       this.spaces = await this.ifcService.getSpaces('stair');
     }
     this.loading = false;
