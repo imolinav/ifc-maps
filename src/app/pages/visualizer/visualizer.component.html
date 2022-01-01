@@ -1,25 +1,25 @@
 <div class="loading" *ngIf="loading">
     <div class="loading-sphere">
         <div class="spinner-grow text-light" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">{{ 'VISUALIZER.LOADING.SPHERE' | transloco }}</span>
         </div>
     </div>
     <div class="loading-message">
-        <h2>Cargando modelo...</h2>
+        <h2>{{ 'VISUALIZER.LOADING.TEXT' | transloco }}</h2>
     </div>
 </div>
 <div class="elements" *ngIf="spaces">
     <div class="elements-header" (click)="expandElements()">
-        <h3>Elementos</h3>
+        <h3>{{ 'VISUALIZER.ELEMENTS.TITLE' | transloco }}</h3>
         <mat-icon>{{ elementsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
     </div>
     <div class="elements-body" [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'">
         <div class="elements-body-search">
             <select class="form-select" aria-label="Default select example" #spaceType (change)="getSpaces(spaceType.value)">
-                <option selected>Open this select menu</option>
-                <option value="stair" selected>Escaleras</option>
-                <option value="wall">Paredes</option>
-                <option value="column">Pilares</option>
+                <option disabled>{{ 'VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER' | transloco }}</option>
+                <option value="stair" selected>{{ 'VISUALIZER.ELEMENTS.ITEMS.STAIRS' | transloco }}</option>
+                <option value="wall">{{ 'VISUALIZER.ELEMENTS.ITEMS.WALLS' | transloco }}</option>
+                <option value="column">{{ 'VISUALIZER.ELEMENTS.ITEMS.COLUMNS' | transloco }}</option>
             </select>
         </div>
         <div *ngIf="spaces && spaces.length > 0" class="elements-body-items">
@@ -27,12 +27,12 @@
         </div>
     </div>
     <div class="elements-header" (click)="expandOptions()">
-        <h3>Opciones</h3>
+        <h3>{{ 'VISUALIZER.OPTIONS.TITLE' | transloco }}</h3>
         <mat-icon>{{ optionsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
     </div>
     <div class="elements-body" [ngClass]="optionsExpanded ? '' : 'element-body-collapsed'">
         <div class="elements-body-search">
-            <mat-checkbox class="example-margin" [checked]="transparent" (change)="toggleTransparency()">Transparencia</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="transparent" (change)="toggleTransparency()">{{ 'VISUALIZER.OPTIONS.ITEMS.TRANSPARENCY' | transloco }}</mat-checkbox>
         </div>
     </div>
 </div>

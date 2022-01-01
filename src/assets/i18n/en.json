@@ -53,5 +53,26 @@
                 "COUNTRY_ABBREVIATED": "Country (abbreviated)"
             }
         }
-    }    
+    },
+    "VISUALIZER": {
+        "LOADING": {
+            "SPHERE": "Loading...",
+            "TEXT": "Loading model..."
+        },
+        "ELEMENTS": {
+            "TITLE": "Elements",
+            "ITEMS": {
+                "PLACEHOLDER": "Choose an element...",
+                "STAIRS": "Stairs",
+                "WALLS": "Walls",
+                "COLUMNS": "Columns"
+            }
+        },
+        "OPTIONS": {
+            "TITLE": "Options",
+            "ITEMS": {
+                "TRANSPARENCY": "Transparency"
+            }
+        }
+    } 
 }

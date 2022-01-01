@@ -53,5 +53,26 @@
                 "COUNTRY_ABBREVIATED": "País (abreviado)"
             }
         }
-    }    
+    },
+    "VISUALIZER": {
+        "LOADING": {
+            "SPHERE": "Cargando...",
+            "TEXT": "Cargando modelo..."
+        },
+        "ELEMENTS": {
+            "TITLE": "Elementos",
+            "ITEMS": {
+                "PLACEHOLDER": "Elige un elemento...",
+                "STAIRS": "Escaleras",
+                "WALLS": "Paredes",
+                "COLUMNS": "Columnas"
+            }
+        },
+        "OPTIONS": {
+            "TITLE": "Opciones",
+            "ITEMS": {
+                "TRANSPARENCY": "Transparencia"
+            }
+        }
+    }
 }
