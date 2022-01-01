@@ -9,6 +9,24 @@ import {
   IfcWall,
   IfcStair,
   IfcColumn,
+  IFCFURNISHINGELEMENT,
+  IFCBEAM,
+  IFCSLAB,
+  IFCRAILING,
+  IFCWINDOW,
+  IFCBUILDINGSTOREY,
+  IfcFurnishingElement,
+  IfcBeam,
+  IfcSlab,
+  IfcRailing,
+  IfcWindow,
+  IfcBuildingStorey,
+  IfcDoor,
+  IfcRamp,
+  IfcPile,
+  IFCDOOR,
+  IFCPILE,
+  IFCRAMP,
 } from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
 
@@ -17,7 +35,21 @@ export class IfcService {
   ifcViewer?: IfcViewerAPI;
   container?: HTMLElement;
   modelId: number;
-  spaces: (IfcWall | IfcColumn | IfcStair)[];
+  spaces: (
+    | IfcSpace
+    | IfcWall
+    | IfcColumn
+    | IfcStair
+    | IfcFurnishingElement
+    | IfcBeam
+    | IfcSlab
+    | IfcRailing
+    | IfcDoor
+    | IfcWindow
+    | IfcPile
+    | IfcRamp
+    | IfcBuildingStorey
+  )[];
   spacesPromise: Promise<IfcStair[]>;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
@@ -26,9 +58,19 @@ export class IfcService {
     USE_FAST_BOOLS: false,
   };
   spacesTypes = [
-    { type: 'wall', obj: IFCWALL },
-    { type: 'stair', obj: IFCSTAIR },
-    { type: 'column', obj: IFCCOLUMN },
+    { type: 'SPACE', obj: IFCSPACE },
+    { type: 'WALL', obj: IFCWALL },
+    { type: 'STAIR', obj: IFCSTAIR },
+    { type: 'COLUMN', obj: IFCCOLUMN },
+    { type: 'FURNISHING_ELEMENT', obj: IFCFURNISHINGELEMENT },
+    { type: 'BEAM', obj: IFCBEAM },
+    { type: 'SLAB', obj: IFCSLAB },
+    { type: 'RAILING', obj: IFCRAILING },
+    { type: 'DOOR', obj: IFCDOOR },
+    { type: 'WINDOW', obj: IFCWINDOW },
+    { type: 'PILE', obj: IFCPILE },
+    { type: 'RAMP', obj: IFCRAMP },
+    { type: 'BUILDING_STOREY', obj: IFCBUILDINGSTOREY },
   ];
 
   constructor() {
@@ -151,5 +193,9 @@ export class IfcService {
 
   toggleTransparency(on: boolean) {
     this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, 0.1, true);
+  }
+
+  getSpaceTypes() {
+    return this.spacesTypes;
   }
 }

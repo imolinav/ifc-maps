@@ -63,10 +63,21 @@
             "TITLE": "Elementos",
             "ITEMS": {
                 "PLACEHOLDER": "Elige un elemento...",
-                "STAIRS": "Escaleras",
-                "WALLS": "Paredes",
-                "COLUMNS": "Columnas"
-            }
+                "SPACE": "Espacios",
+                "WALL": "Paredes",
+                "STAIR": "Escaleras",
+                "COLUMN": "Columnas",
+                "FURNISHING_ELEMENT": "Elementos de decoración",
+                "BEAM": "Vigas",
+                "SLAB": "Losas",
+                "RAILING": "Barandillas",
+                "DOOR": "Puertas",
+                "PILE": "Pilas",
+                "RAMP": "Rampas",
+                "WINDOW": "Ventanas",
+                "BUILDING_STOREY": "Pisos"
+            },
+            "NO_ITEMS": "El modelo no tiene asignado elementos del tipo seleccionado."
         },
         "OPTIONS": {
             "TITLE": "Opciones",

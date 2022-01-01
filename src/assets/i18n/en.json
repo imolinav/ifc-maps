@@ -63,10 +63,21 @@
             "TITLE": "Elements",
             "ITEMS": {
                 "PLACEHOLDER": "Choose an element...",
-                "STAIRS": "Stairs",
-                "WALLS": "Walls",
-                "COLUMNS": "Columns"
-            }
+                "SPACE": "Spaces",
+                "WALL": "Walls",
+                "STAIR": "Stairs",
+                "COLUMN": "Columns",
+                "FURNISHING_ELEMENT": "Furnishing element",
+                "BEAM": "Beam",
+                "SLAB": "Slab",
+                "RAILING": "Railing",
+                "DOOR": "Doors",
+                "PILE": "Piles",
+                "RAMP": "Rampes",
+                "WINDOW": "Window",
+                "BUILDING_STOREY": "Building storey"
+            },
+            "NO_ITEMS": "The model doesn't have elements of the selected type assigned."
         },
         "OPTIONS": {
             "TITLE": "Options",

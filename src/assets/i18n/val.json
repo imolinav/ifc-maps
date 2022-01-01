@@ -63,10 +63,21 @@
             "TITLE": "Elements",
             "ITEMS": {
                 "PLACEHOLDER": "Selecciona un element...",
-                "STAIRS": "Escales",
-                "WALLS": "Parets",
-                "COLUMNS": "Columnes"
-            }
+                "SPACE": "Espais",
+                "WALL": "Parets",
+                "STAIR": "Escales",
+                "COLUMN": "Columnes",
+                "FURNISHING_ELEMENT": "Elements decoratius",
+                "BEAM": "Vigues",
+                "SLAB": "Loses",
+                "RAILING": "Passamans",
+                "DOOR": "Portes",
+                "PILE": "Piles",
+                "RAMP": "Rampes",
+                "WINDOW": "Finestres",
+                "BUILDING_STOREY": "Pisos"
+            },
+            "NO_ITEMS": "El model no te assignat elements del tipus seleccionat."
         },
         "OPTIONS": {
             "TITLE": "Opcions",

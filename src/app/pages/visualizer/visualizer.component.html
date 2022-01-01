@@ -15,15 +15,16 @@
     </div>
     <div class="elements-body" [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'">
         <div class="elements-body-search">
-            <select class="form-select" aria-label="Default select example" #spaceType (change)="getSpaces(spaceType.value)">
+            <select class="form-select" aria-label="Default select example" #spaceType (change)="getSpaces(spaceType.value)" *ngIf="spaceTypes">
                 <option disabled>{{ 'VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER' | transloco }}</option>
-                <option value="stair" selected>{{ 'VISUALIZER.ELEMENTS.ITEMS.STAIRS' | transloco }}</option>
-                <option value="wall">{{ 'VISUALIZER.ELEMENTS.ITEMS.WALLS' | transloco }}</option>
-                <option value="column">{{ 'VISUALIZER.ELEMENTS.ITEMS.COLUMNS' | transloco }}</option>
+                <option [selected]="spaceType.type === 'STAIR'" [value]="spaceType.type" *ngFor="let spaceType of spaceTypes">{{ 'VISUALIZER.ELEMENTS.ITEMS.' + spaceType.type| transloco }}</option>
             </select>
         </div>
         <div *ngIf="spaces && spaces.length > 0" class="elements-body-items">
             <p class="elements-body-items-item" *ngFor="let item of spaces" [class]="item.expressID === itemSelected ? 'selected' : ''" (mouseover)="highlightElement(item.expressID, true)" (click)="selectElement(item.expressID)" (mouseout)="highlightElement(item.expressID, false)">{{ item.Name.value }}</p>
+        </div>
+        <div *ngIf="!spaces || spaces.length === 0" class="elements-body-items">
+            <p class="elements-body-items-no-items">{{ 'VISUALIZER.ELEMENTS.NO_ITEMS' | transloco }}</p>
         </div>
     </div>
     <div class="elements-header" (click)="expandOptions()">

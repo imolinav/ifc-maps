@@ -7,7 +7,21 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
-import { IfcSpace, IfcStair, IfcWall } from 'web-ifc';
+import {
+  IfcBeam,
+  IfcBuildingStorey,
+  IfcColumn,
+  IfcDoor,
+  IfcFurnishingElement,
+  IfcPile,
+  IfcRailing,
+  IfcRamp,
+  IfcSlab,
+  IfcSpace,
+  IfcStair,
+  IfcWall,
+  IfcWindow,
+} from 'web-ifc';
 
 @Component({
   selector: 'app-visualizer',
@@ -16,24 +30,37 @@ import { IfcSpace, IfcStair, IfcWall } from 'web-ifc';
 })
 export class VisualizerComponent implements OnInit, AfterContentInit {
   ifcId: string;
-  spaces: (IfcStair | IfcSpace | IfcWall)[];
+  spaces: (
+    | IfcSpace
+    | IfcWall
+    | IfcColumn
+    | IfcStair
+    | IfcFurnishingElement
+    | IfcBeam
+    | IfcSlab
+    | IfcRailing
+    | IfcDoor
+    | IfcWindow
+    | IfcPile
+    | IfcRamp
+    | IfcBuildingStorey
+  )[];
   itemSelected: number;
   loading = false;
   elementsExpanded = true;
   optionsExpanded = false;
   transparent: boolean = true;
+  spaceTypes: { type: string; obj: number }[];
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
 
-  constructor(
-    private ifcService: IfcService, 
-    private route: ActivatedRoute
-  ) {}
+  constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.params.subscribe((res) => {
       this.ifcId = res['id'];
     });
+    this.spaceTypes = this.ifcService.getSpaceTypes();
   }
 
   async ngAfterContentInit() {
@@ -48,7 +75,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (container) {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
-      this.spaces = await this.ifcService.getSpaces('stair');
+      this.spaces = await this.ifcService.getSpaces('STAIR');
     }
     this.loading = false;
   }
