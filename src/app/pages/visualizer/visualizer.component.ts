@@ -8,7 +8,6 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
 import { IfcSpace, IfcStair, IfcWall } from 'web-ifc';
-import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
   selector: 'app-visualizer',
@@ -28,8 +27,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   constructor(
     private ifcService: IfcService, 
-    private route: ActivatedRoute,
-    private translocoService: TranslocoService
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
