@@ -123,8 +123,12 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.optionsExpanded = !this.optionsExpanded;
   }
 
-  toggleTransparency() {
+  toggleTransparency(transparencyValue: number) {
     this.transparent = !this.transparent;
-    this.ifcService.toggleTransparency(this.transparent);
+    this.ifcService.changeTransparency(this.transparent, transparencyValue/100);
+  }
+
+  updateTransparency(transparencyValue: number) {
+    this.ifcService.changeTransparency(this.transparent, transparencyValue/100);
   }
 }

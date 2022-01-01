@@ -1,43 +1,90 @@
 <div class="loading" *ngIf="loading">
-    <div class="loading-sphere">
-        <div class="spinner-grow text-light" role="status">
-            <span class="visually-hidden">{{ 'VISUALIZER.LOADING.SPHERE' | transloco }}</span>
-        </div>
+  <div class="loading-sphere">
+    <div class="spinner-grow text-light" role="status">
+      <span class="visually-hidden">{{
+        "VISUALIZER.LOADING.SPHERE" | transloco
+      }}</span>
     </div>
-    <div class="loading-message">
-        <h2>{{ 'VISUALIZER.LOADING.TEXT' | transloco }}</h2>
-    </div>
+  </div>
+  <div class="loading-message">
+    <h2>{{ "VISUALIZER.LOADING.TEXT" | transloco }}</h2>
+  </div>
 </div>
 <div class="elements" *ngIf="spaces">
-    <div class="elements-header" (click)="expandElements()">
-        <h3>{{ 'VISUALIZER.ELEMENTS.TITLE' | transloco }}</h3>
-        <mat-icon>{{ elementsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+  <div class="elements-header" (click)="expandElements()">
+    <h3>{{ "VISUALIZER.ELEMENTS.TITLE" | transloco }}</h3>
+    <mat-icon>{{ elementsExpanded ? "expand_less" : "expand_more" }}</mat-icon>
+  </div>
+  <div
+    class="elements-body"
+    [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'"
+  >
+    <div class="elements-body-search">
+      <select
+        class="form-select"
+        aria-label="Default select example"
+        #spaceType
+        (change)="getSpaces(spaceType.value)"
+        *ngIf="spaceTypes"
+      >
+        <option disabled>
+          {{ "VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER" | transloco }}
+        </option>
+        <option
+          [selected]="spaceType.type === 'STAIR'"
+          [value]="spaceType.type"
+          *ngFor="let spaceType of spaceTypes"
+        >
+          {{ "VISUALIZER.ELEMENTS.ITEMS." + spaceType.type | transloco }}
+        </option>
+      </select>
     </div>
-    <div class="elements-body" [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'">
-        <div class="elements-body-search">
-            <select class="form-select" aria-label="Default select example" #spaceType (change)="getSpaces(spaceType.value)" *ngIf="spaceTypes">
-                <option disabled>{{ 'VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER' | transloco }}</option>
-                <option [selected]="spaceType.type === 'STAIR'" [value]="spaceType.type" *ngFor="let spaceType of spaceTypes">{{ 'VISUALIZER.ELEMENTS.ITEMS.' + spaceType.type| transloco }}</option>
-            </select>
-        </div>
-        <div *ngIf="spaces && spaces.length > 0" class="elements-body-items">
-            <p class="elements-body-items-item" *ngFor="let item of spaces" [class]="item.expressID === itemSelected ? 'selected' : ''" (mouseover)="highlightElement(item.expressID, true)" (click)="selectElement(item.expressID)" (mouseout)="highlightElement(item.expressID, false)">{{ item.Name.value }}</p>
-        </div>
-        <div *ngIf="!spaces || spaces.length === 0" class="elements-body-items">
-            <p class="elements-body-items-no-items">{{ 'VISUALIZER.ELEMENTS.NO_ITEMS' | transloco }}</p>
-        </div>
+    <div *ngIf="spaces && spaces.length > 0" class="elements-body-items">
+      <p
+        class="elements-body-items-item"
+        *ngFor="let item of spaces"
+        [class]="item.expressID === itemSelected ? 'selected' : ''"
+        (mouseover)="highlightElement(item.expressID, true)"
+        (click)="selectElement(item.expressID)"
+        (mouseout)="highlightElement(item.expressID, false)"
+      >
+        {{ item.Name.value }}
+      </p>
     </div>
-    <div class="elements-header" (click)="expandOptions()">
-        <h3>{{ 'VISUALIZER.OPTIONS.TITLE' | transloco }}</h3>
-        <mat-icon>{{ optionsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    <div *ngIf="!spaces || spaces.length === 0" class="elements-body-items">
+      <p class="elements-body-items-no-items">
+        {{ "VISUALIZER.ELEMENTS.NO_ITEMS" | transloco }}
+      </p>
     </div>
-    <div class="elements-body" [ngClass]="optionsExpanded ? '' : 'element-body-collapsed'">
-        <div class="elements-body-search">
-            <mat-checkbox class="example-margin" [checked]="transparent" (change)="toggleTransparency()">{{ 'VISUALIZER.OPTIONS.ITEMS.TRANSPARENCY' | transloco }}</mat-checkbox>
-        </div>
+  </div>
+  <div class="elements-header" (click)="expandOptions()">
+    <h3>{{ "VISUALIZER.OPTIONS.TITLE" | transloco }}</h3>
+    <mat-icon>{{ optionsExpanded ? "expand_less" : "expand_more" }}</mat-icon>
+  </div>
+  <div
+    class="elements-body"
+    [ngClass]="optionsExpanded ? '' : 'element-body-collapsed'"
+  >
+    <div class="elements-body-search">
+      <mat-checkbox
+        class="elements-body-search-checkbox"
+        [checked]="transparent"
+        (change)="toggleTransparency(transparencyValue.value)"
+        >{{ "VISUALIZER.OPTIONS.ITEMS.TRANSPARENCY" | transloco }}</mat-checkbox
+      >
+      <mat-slider
+        class="elements-body-search-slider"
+        max="100"
+        min="0"
+        step="1"
+        value="10"
+        #transparencyValue
+        (change)="updateTransparency(transparencyValue.value)"
+        [disabled]="!transparent"
+      >
+      </mat-slider>
     </div>
+  </div>
 </div>
-<div class="tools">
-    
-</div>
+<div class="tools"></div>
 <div #threeContainer class="viewer"></div>

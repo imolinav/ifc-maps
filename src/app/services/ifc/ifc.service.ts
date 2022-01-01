@@ -195,6 +195,10 @@ export class IfcService {
     this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, 0.1, true);
   }
 
+  changeTransparency(on: boolean, value: number) {
+    this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, value, true);
+  }
+
   getSpaceTypes() {
     return this.spacesTypes;
   }
