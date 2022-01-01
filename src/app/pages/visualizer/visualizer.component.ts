@@ -47,7 +47,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   )[];
   itemSelected: number;
   loading = false;
-  elementsExpanded = true;
+  elementsExpanded = false;
   optionsExpanded = false;
   transparent: boolean = true;
   spaceTypes: { type: string; obj: number }[];
