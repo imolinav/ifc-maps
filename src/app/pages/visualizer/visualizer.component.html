@@ -86,5 +86,12 @@
     </div>
   </div>
 </div>
-<div class="tools"></div>
+<div class="element" *ngIf="itemSelected">
+  <button mat-icon-button>
+    <mat-icon>{{ optionsExpanded ? 'visibility_off' : 'visibility'}}</mat-icon>
+  </button>
+  <button mat-icon-button>
+    <mat-icon>transform</mat-icon>
+  </button>
+</div>
 <div #threeContainer class="viewer"></div>
