@@ -1,4 +1,5 @@
-import { DoubleSide, MeshLambertMaterial } from 'three';
+import * as THREE from 'three';
+import { DoubleSide, MeshLambertMaterial, Object3D, Vector3 } from 'three';
 import {
   LoaderSettings,
   IFCSPACE,
@@ -35,6 +36,7 @@ export class IfcService {
   ifcViewer?: IfcViewerAPI;
   container?: HTMLElement;
   modelId: number;
+  scene: Object3D;
   spaces: (
     | IfcSpace
     | IfcWall
@@ -96,6 +98,7 @@ export class IfcService {
     });
     this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
+    this.ifcViewer?.toggleClippingPlanes();
   }
 
   setupInputs() {
@@ -141,10 +144,40 @@ export class IfcService {
     );
   }
 
+  toggleClippingPlane(on: boolean) {
+    if(on) {
+      /**
+       * normal será:
+       * - (1, 0, 0) para moverme a lo largo de la X
+       * - (0, 1, 0) para moverme a lo largo de la Y
+       * - (0, 0, 1) para moverme a lo largo de la Z
+       * Dependiendo de en que plano este el elemento seleccionado (falta saber esto).
+       * 
+       * point será el punto medio de la caga que enmarque el elemento seleccionado.
+       */
+      const normal = new Vector3(1, 0, 0);
+      const point = new Vector3(0, 0, 0);
+      this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
+    } else {
+      this.ifcViewer?.clipper.deleteAllPlanes();
+    }
+  }
+
   async pick() {
     const found = await this.ifcViewer?.IFC.pickIfcItem(true);
+    this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
+
+    this.scene = new THREE.Scene();
+    this.ifcViewer?.context.scene.scene;
+
+    // const subset = this.ifcViewer?.IFC.loader.ifcManager.createSubset({ scene: this.ifcViewer?.context.getScene(), modelID: found.modelID, ids: [found.id], removePrevious: true });
+    // console.log(subset);
+    
+    this.ifcViewer.IFC.getSpatialStructure(found.modelID, true).then(res => console.log(res));
+
+    console.log('GetCoordinationMatrix', this.ifcViewer?.IFC.loader.ifcManager.ifcAPI.GetCoordinationMatrix(found.modelID));
     return found.id;
   }
 
