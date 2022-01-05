@@ -195,4 +195,14 @@ export class IfcService {
   getSpaceTypes() {
     return this.spacesTypes;
   }
+
+  hideElement(expressId: number) {
+    this.ifcViewer?.IFC.loader.ifcManager.hideItems(this.modelId, [expressId]);
+    this.unselectElement();
+  }
+
+  showElement(expressId: number) {
+    this.ifcViewer?.IFC.loader.ifcManager.showItems(this.modelId, [expressId]);
+    this.selectElement(expressId);
+  }
 }
