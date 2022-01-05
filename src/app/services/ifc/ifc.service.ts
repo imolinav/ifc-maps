@@ -113,10 +113,7 @@ export class IfcService {
   }
 
   async loadIfcUrl(url: string) {
-    await this.ifcViewer?.IFC.loadIfcUrl(url, false, (event) => {
-      const progress = (event.loaded / event.total) * 100;
-      console.log(`Progress: ${progress}%`);
-    }).then((res) => {
+    await this.ifcViewer?.IFC.loadIfcUrl(url, false).then((res) => {
       console.log(res);
       this.modelId = res.modelID;
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
