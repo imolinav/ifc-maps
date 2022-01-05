@@ -94,14 +94,13 @@ export class IfcService {
       preselectMaterial,
       selectMaterial,
     });
-    this.ifcViewer.IFC.setWasmPath('assets/wasm/');
-    this.ifcViewer.IFC?.applyWebIfcConfig(this.webConfig);
+    this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
+    this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
   }
 
   setupInputs() {
     if (!this.container) return;
     this.container.onclick = this.handleClick;
-    this.container.ondblclick = this.handleDoubleClick;
     this.container.onmousemove = this.handleMouseMove;
   }
 
@@ -146,16 +145,13 @@ export class IfcService {
   }
 
   async pick() {
-    const found = await this.ifcViewer?.IFC.pickIfcItem();
-    if (found == null || found == undefined) return;
+    const found = await this.ifcViewer?.IFC.pickIfcItem(true);
+    if (!found) return -1;
     this.select(found.modelID, found.id, false);
+    return found.id;
   }
 
   private handleClick = (_event: Event) => {};
-
-  private handleDoubleClick = async (event: Event) => {
-    await this.pick();
-  };
 
   private handleMouseMove = (_event: Event) => {
     this.ifcViewer?.IFC.prePickIfcItem();
@@ -180,7 +176,7 @@ export class IfcService {
   }
 
   selectElement(elementId: number) {
-    this.ifcViewer?.IFC.selection.pickByID(this.modelId, [elementId]);
+    this.ifcViewer?.IFC.selection.pickByID(this.modelId, [elementId], true);
   }
 
   unselectElement() {

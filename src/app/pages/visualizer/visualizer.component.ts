@@ -5,7 +5,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ChildActivationStart } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
 import {
   IfcBeam,
@@ -76,6 +76,15 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
       this.spaces = await this.ifcService.getSpaces('STAIR');
+    }
+    container.ondblclick = async () => {
+      const expressID = await this.ifcService.pick();
+      if(expressID > 0) {
+        this.itemSelected = expressID;
+      } else {
+        this.itemSelected = null;
+        this.ifcService.unselectElement();
+      }
     }
     this.loading = false;
   }
