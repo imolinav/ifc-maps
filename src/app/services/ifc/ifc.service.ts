@@ -29,6 +29,11 @@ import {
   IFCRAMP,
 } from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
+import {
+  acceleratedRaycast,
+  computeBoundsTree,
+  disposeBoundsTree
+} from 'three-mesh-bvh';
 
 export class IfcService {
   currentModel = -1;
@@ -97,6 +102,7 @@ export class IfcService {
       preselectMaterial,
       selectMaterial,
     });
+    this.ifcViewer?.IFC.loader.ifcManager.setupThreeMeshBVH(computeBoundsTree, disposeBoundsTree, acceleratedRaycast);
     this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
     this.ifcViewer?.toggleClippingPlanes();
