@@ -51,6 +51,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   optionsExpanded = false;
   elementsHidden: number[] = [];
   transparent: boolean = true;
+  elementClip: boolean = false;
   spaceTypes: { type: string; obj: number }[];
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
@@ -83,8 +84,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       if(expressID > 0) {
         this.itemSelected = expressID;
       } else {
+        this.ifcService.showElement(this.itemSelected);
         this.itemSelected = null;
         this.ifcService.unselectElement();
+        this.elementClip = false;
       }
     }
     this.loading = false;
@@ -142,6 +145,12 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   updateTransparency(transparencyValue: number) {
     this.ifcService.changeTransparency(this.transparent, transparencyValue/100);
+  }
+
+  toggleClippingPlane() {
+    this.elementClip = !this.elementClip;
+    console.log(this.elementClip);
+    this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected);
   }
 
   toggleElement() {

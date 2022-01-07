@@ -1,4 +1,4 @@
-import { DoubleSide, MeshLambertMaterial } from 'three';
+import { Box3, DoubleSide, MeshLambertMaterial, Object3D, Vector3 } from 'three';
 import {
   LoaderSettings,
   IFCSPACE,
@@ -33,8 +33,11 @@ import { IfcViewerAPI } from 'web-ifc-viewer';
 export class IfcService {
   currentModel = -1;
   ifcViewer?: IfcViewerAPI;
+  ifcModel: any;
+  modelBoundingBox: Box3;
   container?: HTMLElement;
   modelId: number;
+  scene: Object3D;
   spaces: (
     | IfcSpace
     | IfcWall
@@ -96,6 +99,7 @@ export class IfcService {
     });
     this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
+    this.ifcViewer?.toggleClippingPlanes();
   }
 
   setupInputs() {
@@ -115,6 +119,7 @@ export class IfcService {
   async loadIfcUrl(url: string) {
     await this.ifcViewer?.IFC.loadIfcUrl(url, false).then((res) => {
       console.log(res);
+      this.modelBoundingBox = res?.['geometry'].boundingBox;
       this.modelId = res.modelID;
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
     });
@@ -141,8 +146,67 @@ export class IfcService {
     );
   }
 
+  toggleClippingPlane(on: boolean, expressId: number) {
+    if(on) {
+      const modelCenter = {
+        x: (this.modelBoundingBox.max.x + this.modelBoundingBox.min.x)/2,
+        y: (this.modelBoundingBox.max.y + this.modelBoundingBox.min.y)/2,
+        z: (this.modelBoundingBox.max.z + this.modelBoundingBox.min.z)/2
+      }
+
+      const selection = this.ifcViewer?.IFC.selection.mesh;
+      const selectionAxis = {
+        x: {
+          size: Math.abs(selection.geometry.boundingBox.max.x - selection.geometry.boundingBox.min.x),
+          center: (selection.geometry.boundingBox.max.x + selection.geometry.boundingBox.min.x)/2
+        },
+        y: {
+          size: Math.abs(selection.geometry.boundingBox.max.y - selection.geometry.boundingBox.min.y),
+          center: (selection.geometry.boundingBox.max.y + selection.geometry.boundingBox.min.y)/2
+        },
+        z: {
+          size: Math.abs(selection.geometry.boundingBox.max.z - selection.geometry.boundingBox.min.z),
+          center: (selection.geometry.boundingBox.max.z + selection.geometry.boundingBox.min.z)/2
+        },
+      }
+
+      let direction = 1;
+
+      let normal: Vector3;
+      if(selectionAxis.x.size < selectionAxis.y.size && selectionAxis.x.size < selectionAxis.z.size) {
+        if(selectionAxis.x.center > modelCenter.x) {
+          direction = -1;
+        }
+        normal = new Vector3(direction, 0, 0);
+      } else if(selectionAxis.y.size < selectionAxis.x.size && selectionAxis.y.size < selectionAxis.z.size) {
+        if(selectionAxis.y.center > modelCenter.y) {
+          direction = -1;
+        }
+        normal = new Vector3(0, direction, 0);
+      } else {
+        if(selectionAxis.z.center > modelCenter.z) {
+          direction = -1;
+        }
+        normal = new Vector3(0, 0, direction);
+      }
+
+      const point = new Vector3(
+        selectionAxis.x.center,
+        selectionAxis.y.center,
+        selectionAxis.z.center
+      );
+
+      this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
+      this.hideElement(expressId);
+    } else {
+      this.ifcViewer?.clipper.deleteAllPlanes();
+      this.showElement(expressId);
+    }
+  }
+
   async pick() {
     const found = await this.ifcViewer?.IFC.pickIfcItem(true);
+    this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
     return found.id;

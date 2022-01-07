@@ -91,7 +91,7 @@
     <mat-icon>{{ elementsHidden.indexOf(this.itemSelected) >= 0 ? 'visibility_off' : 'visibility'}}</mat-icon>
   </button>
   <button mat-icon-button>
-    <mat-icon>transform</mat-icon>
+    <mat-icon (click)="toggleClippingPlane()">transform</mat-icon>
   </button>
 </div>
 <div #threeContainer class="viewer"></div>
