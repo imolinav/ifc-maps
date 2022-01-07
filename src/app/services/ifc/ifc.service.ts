@@ -244,7 +244,6 @@ export class IfcService {
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
     const element = await this.getElementSelected(found.id);
-    console.log(element);
     return element;
   }
 

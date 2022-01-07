@@ -49,6 +49,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   loading = false;
   elementsExpanded = false;
   optionsExpanded = false;
+  infoExpanded = false;
   elementsHidden: number[] = [];
   transparent: boolean = true;
   elementClip: boolean = false;
@@ -80,14 +81,14 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.spaces = await this.ifcService.getSpaces('STAIR');
     }
     container.ondblclick = async () => {
-      const expressId = await this.ifcService.pick();
-      console.log(expressId);
+      const element = await this.ifcService.pick();
+      console.log(element);
       this.elementClip = false;
       if(this.itemSelected) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
       }
-      if(expressId !== -1) {
-        this.itemSelected = expressId;
+      if(element !== -1) {
+        this.itemSelected = element;
       } else {
         this.itemSelected = null;
         this.ifcService.unselectElement();
@@ -123,7 +124,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         this.ifcService.selectElement(expressId);
       }
       this.itemSelected = await this.ifcService.getElementSelected(expressId);
-      console.log(this.itemSelected);
     }
   }
 

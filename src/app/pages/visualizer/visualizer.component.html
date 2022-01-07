@@ -86,12 +86,20 @@
     </div>
   </div>
 </div>
+<div class="info" *ngIf="itemSelected && infoExpanded">
+  <h3>{{ itemSelected.Name.value }}</h3>
+  <p>Description: {{ itemSelected.Description.value }}</p>
+  <p>Type: {{ itemSelected.ObjectType.value }}</p>
+</div>
 <div class="element" *ngIf="itemSelected">
   <button mat-icon-button (click)="toggleElement()" [disabled]="elementClip">
     <mat-icon>{{ elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'visibility_off' : 'visibility'}}</mat-icon>
   </button>
   <button mat-icon-button [disabled]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0" (click)="toggleClippingPlane()">
     <mat-icon>transform</mat-icon>
+  </button>
+  <button mat-icon-button (click)="infoExpanded = !infoExpanded">
+    <mat-icon>info</mat-icon>
   </button>
 </div>
 <div #threeContainer class="viewer"></div>
