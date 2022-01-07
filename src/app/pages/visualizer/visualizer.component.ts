@@ -5,7 +5,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, ChildActivationStart } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
 import {
   IfcBeam,
@@ -81,10 +81,13 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
     container.ondblclick = async () => {
       const expressID = await this.ifcService.pick();
+      this.elementClip = false;
+      if(this.itemSelected) {
+        this.ifcService.showElement([this.itemSelected], false);
+      }
       if(expressID > 0) {
         this.itemSelected = expressID;
       } else {
-        this.ifcService.showElement(this.itemSelected);
         this.itemSelected = null;
         this.ifcService.unselectElement();
         this.elementClip = false;
@@ -104,9 +107,9 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   highlightElement(elementId: number, on: boolean) {
     if (on) {
-      this.ifcService.highlightElement(elementId);
+      this.ifcService.highlightElement([elementId]);
     } else {
-      this.ifcService.removeHighlight();
+      this.ifcService.removeHighlights();
     }
   }
 
@@ -149,7 +152,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   toggleClippingPlane() {
     this.elementClip = !this.elementClip;
-    console.log(this.elementClip);
     this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected);
   }
 
@@ -157,10 +159,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     const index = this.elementsHidden.indexOf(this.itemSelected);
     if(index >= 0) {
       this.elementsHidden.splice(index, 1);
-      this.ifcService.showElement(this.itemSelected);
+      this.ifcService.showElement([this.itemSelected], true);
     } else {
       this.elementsHidden.push(this.itemSelected);
-      this.ifcService.hideElement(this.itemSelected);
+      this.ifcService.hideElement([this.itemSelected]);
     }
   }
 }

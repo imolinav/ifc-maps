@@ -1,4 +1,8 @@
-import { Box3, DoubleSide, MeshLambertMaterial, Object3D, Vector3 } from 'three';
+import {
+  DoubleSide,
+  MeshLambertMaterial,
+  Vector3,
+} from 'three';
 import {
   LoaderSettings,
   IFCSPACE,
@@ -32,17 +36,13 @@ import { IfcViewerAPI } from 'web-ifc-viewer';
 import {
   acceleratedRaycast,
   computeBoundsTree,
-  disposeBoundsTree
+  disposeBoundsTree,
 } from 'three-mesh-bvh';
 
 export class IfcService {
-  currentModel = -1;
   ifcViewer?: IfcViewerAPI;
   ifcModel: any;
-  modelBoundingBox: Box3;
   container?: HTMLElement;
-  modelId: number;
-  scene: Object3D;
   spaces: (
     | IfcSpace
     | IfcWall
@@ -58,7 +58,6 @@ export class IfcService {
     | IfcRamp
     | IfcBuildingStorey
   )[];
-  spacesPromise: Promise<IfcStair[]>;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
   webConfig: LoaderSettings = {
@@ -102,7 +101,11 @@ export class IfcService {
       preselectMaterial,
       selectMaterial,
     });
-    this.ifcViewer?.IFC.loader.ifcManager.setupThreeMeshBVH(computeBoundsTree, disposeBoundsTree, acceleratedRaycast);
+    this.ifcViewer?.IFC.loader.ifcManager.setupThreeMeshBVH(
+      computeBoundsTree,
+      disposeBoundsTree,
+      acceleratedRaycast
+    );
     this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
     this.ifcViewer?.toggleClippingPlanes();
@@ -114,27 +117,28 @@ export class IfcService {
     this.container.onmousemove = this.handleMouseMove;
   }
 
-  subscribeOnSelect(action: (modelID: number, id: number) => void) {
+  /* subscribeOnSelect(action: (modelID: number, id: number) => void) {
     this.onSelectActions.push(action);
-  }
+  } */
 
-  loadIfc(file: File) {
-    this.ifcViewer?.IFC.loadIfc(file, true);
-  }
-
-  async loadIfcUrl(url: string) {
-    await this.ifcViewer?.IFC.loadIfcUrl(url, false).then((res) => {
-      console.log(res);
-      this.modelBoundingBox = res?.['geometry'].boundingBox;
-      this.modelId = res.modelID;
+  async loadIfc(file: File) {
+    await this.ifcViewer?.IFC.loadIfc(file, true).then((res) => {
+      this.ifcModel = res;
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
     });
   }
 
-  select(modelID: number, expressID: number, pick = true) {
-    if (pick) this.ifcViewer?.IFC.pickIfcItemsByID(modelID, [expressID]);
-    this.currentModel = modelID;
-    this.onSelectActions.forEach((action) => action(modelID, expressID));
+  async loadIfcUrl(url: string) {
+    await this.ifcViewer?.IFC.loadIfcUrl(url, false).then((res) => {
+      // console.log(res);
+      this.ifcModel = res;
+      this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
+    });
+  }
+
+  select(modelID: number, expressId: number, pick = true) {
+    if (pick) this.ifcViewer?.IFC.pickIfcItemsByID(modelID, [expressId]);
+    this.onSelectActions.forEach((action) => action(modelID, expressId));
   }
 
   async getSpaces(type: string) {
@@ -146,51 +150,75 @@ export class IfcService {
       }
     }
     return await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
-      0,
+      this.ifcModel.modelID,
       obj,
       true
     );
   }
 
   toggleClippingPlane(on: boolean, expressId: number) {
-    if(on) {
+    if (on) {
       const modelCenter = {
-        x: (this.modelBoundingBox.max.x + this.modelBoundingBox.min.x)/2,
-        y: (this.modelBoundingBox.max.y + this.modelBoundingBox.min.y)/2,
-        z: (this.modelBoundingBox.max.z + this.modelBoundingBox.min.z)/2
-      }
+        x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
+        y: (this.ifcModel?.['geometry'].boundingBox.max.y + this.ifcModel?.['geometry'].boundingBox.min.y) / 2,
+        z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+      };
 
       const selection = this.ifcViewer?.IFC.selection.mesh;
       const selectionAxis = {
         x: {
-          size: Math.abs(selection.geometry.boundingBox.max.x - selection.geometry.boundingBox.min.x),
-          center: (selection.geometry.boundingBox.max.x + selection.geometry.boundingBox.min.x)/2
+          size: Math.abs(
+            selection.geometry.boundingBox.max.x -
+              selection.geometry.boundingBox.min.x
+          ),
+          center:
+            (selection.geometry.boundingBox.max.x +
+              selection.geometry.boundingBox.min.x) /
+            2,
         },
         y: {
-          size: Math.abs(selection.geometry.boundingBox.max.y - selection.geometry.boundingBox.min.y),
-          center: (selection.geometry.boundingBox.max.y + selection.geometry.boundingBox.min.y)/2
+          size: Math.abs(
+            selection.geometry.boundingBox.max.y -
+              selection.geometry.boundingBox.min.y
+          ),
+          center:
+            (selection.geometry.boundingBox.max.y +
+              selection.geometry.boundingBox.min.y) /
+            2,
         },
         z: {
-          size: Math.abs(selection.geometry.boundingBox.max.z - selection.geometry.boundingBox.min.z),
-          center: (selection.geometry.boundingBox.max.z + selection.geometry.boundingBox.min.z)/2
+          size: Math.abs(
+            selection.geometry.boundingBox.max.z -
+              selection.geometry.boundingBox.min.z
+          ),
+          center:
+            (selection.geometry.boundingBox.max.z +
+              selection.geometry.boundingBox.min.z) /
+            2,
         },
-      }
+      };
 
       let direction = 1;
 
       let normal: Vector3;
-      if(selectionAxis.x.size < selectionAxis.y.size && selectionAxis.x.size < selectionAxis.z.size) {
-        if(selectionAxis.x.center > modelCenter.x) {
+      if (
+        selectionAxis.x.size < selectionAxis.y.size &&
+        selectionAxis.x.size < selectionAxis.z.size
+      ) {
+        if (selectionAxis.x.center > modelCenter.x) {
           direction = -1;
         }
         normal = new Vector3(direction, 0, 0);
-      } else if(selectionAxis.y.size < selectionAxis.x.size && selectionAxis.y.size < selectionAxis.z.size) {
-        if(selectionAxis.y.center > modelCenter.y) {
+      } else if (
+        selectionAxis.y.size < selectionAxis.x.size &&
+        selectionAxis.y.size < selectionAxis.z.size
+      ) {
+        if (selectionAxis.y.center > modelCenter.y) {
           direction = -1;
         }
         normal = new Vector3(0, direction, 0);
       } else {
-        if(selectionAxis.z.center > modelCenter.z) {
+        if (selectionAxis.z.center > modelCenter.z) {
           direction = -1;
         }
         normal = new Vector3(0, 0, direction);
@@ -203,10 +231,10 @@ export class IfcService {
       );
 
       this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
-      this.hideElement(expressId);
+      this.unselectElement();
     } else {
       this.ifcViewer?.clipper.deleteAllPlanes();
-      this.showElement(expressId);
+      this.showElement([expressId], true);
     }
   }
 
@@ -238,41 +266,43 @@ export class IfcService {
     });
   }
 
-  highlightElement(elementId: number) {
-    this.ifcViewer?.IFC.highlight.pickByID(this.modelId, [elementId]);
+  highlightElement(expressId: number[]) {
+    this.ifcViewer?.IFC.highlight.pickByID(this.ifcModel.modelID, expressId);
   }
 
-  selectElement(elementId: number) {
-    this.ifcViewer?.IFC.selection.pickByID(this.modelId, [elementId], true);
+  selectElement(expressId: number) {
+    this.ifcViewer?.IFC.selection.pickByID(this.ifcModel.modelID, [expressId], true);
   }
 
   unselectElement() {
     this.ifcViewer?.IFC.unpickIfcItems();
   }
 
-  removeHighlight() {
+  removeHighlights() {
     this.ifcViewer?.IFC.unHighlightIfcItems();
   }
 
-  toggleTransparency(on: boolean) {
-    this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, 0.1, true);
-  }
+  /* toggleTransparency(on: boolean) {
+    this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, 0.1, true);
+  } */
 
   changeTransparency(on: boolean, value: number) {
-    this.ifcViewer?.IFC.setModelTranslucency(this.modelId, on, value, true);
+    this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, value, true);
   }
 
   getSpaceTypes() {
     return this.spacesTypes;
   }
 
-  hideElement(expressId: number) {
-    this.ifcViewer?.IFC.loader.ifcManager.hideItems(this.modelId, [expressId]);
+  hideElement(expressId: number[]) {
+    this.ifcViewer?.IFC.loader.ifcManager.hideItems(this.ifcModel.modelID, expressId);
     this.unselectElement();
   }
 
-  showElement(expressId: number) {
-    this.ifcViewer?.IFC.loader.ifcManager.showItems(this.modelId, [expressId]);
-    this.selectElement(expressId);
+  showElement(expressId: number[], select?: boolean) {
+    this.ifcViewer?.IFC.loader.ifcManager.showItems(this.ifcModel.modelID, expressId);
+    if(select) {
+      expressId.forEach(element => this.selectElement(element))
+    }
   }
 }
