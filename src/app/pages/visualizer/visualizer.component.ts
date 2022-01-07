@@ -84,6 +84,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       if(expressID > 0) {
         this.itemSelected = expressID;
       } else {
+        this.ifcService.showElement(this.itemSelected);
         this.itemSelected = null;
         this.ifcService.unselectElement();
         this.elementClip = false;
@@ -149,9 +150,9 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   toggleClippingPlane() {
     this.elementClip = !this.elementClip;
     console.log(this.elementClip);
-    this.ifcService.toggleClippingPlane(this.elementClip);
+    this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected);
   }
-  
+
   toggleElement() {
     const index = this.elementsHidden.indexOf(this.itemSelected);
     if(index >= 0) {
