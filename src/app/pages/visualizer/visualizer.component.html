@@ -87,11 +87,11 @@
   </div>
 </div>
 <div class="element" *ngIf="itemSelected">
-  <button mat-icon-button (click)="toggleElement()">
+  <button mat-icon-button (click)="toggleElement()" [disabled]="elementClip">
     <mat-icon>{{ elementsHidden.indexOf(this.itemSelected) >= 0 ? 'visibility_off' : 'visibility'}}</mat-icon>
   </button>
-  <button mat-icon-button>
-    <mat-icon (click)="toggleClippingPlane()">transform</mat-icon>
+  <button mat-icon-button [disabled]="elementsHidden.indexOf(this.itemSelected) >= 0" (click)="toggleClippingPlane()">
+    <mat-icon>transform</mat-icon>
   </button>
 </div>
 <div #threeContainer class="viewer"></div>
