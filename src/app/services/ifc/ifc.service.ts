@@ -96,6 +96,7 @@ export class IfcService {
       preselectMaterial,
       selectMaterial,
     });
+    this.ifcViewer?.addAxes();
     this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
     this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
     this.ifcViewer?.toggleClippingPlanes();
@@ -147,16 +148,31 @@ export class IfcService {
   toggleClippingPlane(on: boolean) {
     if(on) {
       /**
-       * normal será:
-       * - (1, 0, 0) para moverme a lo largo de la X
-       * - (0, 1, 0) para moverme a lo largo de la Y
-       * - (0, 0, 1) para moverme a lo largo de la Z
-       * Dependiendo de en que plano este el elemento seleccionado (falta saber esto).
-       * 
-       * point será el punto medio de la caga que enmarque el elemento seleccionado.
+       * Falta que dependiendo la cara del modelo que selecciono el valor de la normal sea positivo o negativo
        */
-      const normal = new Vector3(1, 0, 0);
-      const point = new Vector3(0, 0, 0);
+
+      const selection = this.ifcViewer?.IFC.selection.mesh;
+      const x = Math.abs(selection.geometry.boundingBox.max.x - selection.geometry.boundingBox.min.x);
+      const y = Math.abs(selection.geometry.boundingBox.max.y - selection.geometry.boundingBox.min.y);
+      const z = Math.abs(selection.geometry.boundingBox.max.z - selection.geometry.boundingBox.min.z);
+
+      const direction = -1;
+
+      let normal: Vector3;
+      if(x < y && x < z) {
+        normal = new Vector3(direction, 0, 0);
+      } else if(y < x && y < z) {
+        normal = new Vector3(0, direction, 0);
+      } else {
+        normal = new Vector3(0, 0, direction);
+      }
+
+      const point = new Vector3(
+        (selection.geometry.boundingBox.max.x + selection.geometry.boundingBox.min.x)/2,
+        (selection.geometry.boundingBox.max.y + selection.geometry.boundingBox.min.y)/2,
+        (selection.geometry.boundingBox.max.z + selection.geometry.boundingBox.min.z)/2
+      );
+
       this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
     } else {
       this.ifcViewer?.clipper.deleteAllPlanes();
@@ -168,16 +184,6 @@ export class IfcService {
     this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
-
-    this.scene = new THREE.Scene();
-    this.ifcViewer?.context.scene.scene;
-
-    // const subset = this.ifcViewer?.IFC.loader.ifcManager.createSubset({ scene: this.ifcViewer?.context.getScene(), modelID: found.modelID, ids: [found.id], removePrevious: true });
-    // console.log(subset);
-    
-    this.ifcViewer.IFC.getSpatialStructure(found.modelID, true).then(res => console.log(res));
-
-    console.log('GetCoordinationMatrix', this.ifcViewer?.IFC.loader.ifcManager.ifcAPI.GetCoordinationMatrix(found.modelID));
     return found.id;
   }
 
