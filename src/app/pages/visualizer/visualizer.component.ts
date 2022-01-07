@@ -49,6 +49,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   loading = false;
   elementsExpanded = false;
   optionsExpanded = false;
+  elementsHidden: number[] = [];
   transparent: boolean = true;
   elementClip: boolean = false;
   spaceTypes: { type: string; obj: number }[];
@@ -109,11 +110,13 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   selectElement(elementId: number) {
+    this.ifcService.unselectElement();
     if (this.itemSelected && this.itemSelected === elementId) {
-      this.ifcService.unselectElement();
       this.itemSelected = null;
     } else {
-      this.ifcService.selectElement(elementId);
+      if(this.elementsHidden.indexOf(elementId) === -1) {
+        this.ifcService.selectElement(elementId);
+      }
       this.itemSelected = elementId;
     }
   }
@@ -147,5 +150,16 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.elementClip = !this.elementClip;
     console.log(this.elementClip);
     this.ifcService.toggleClippingPlane(this.elementClip);
+  }
+  
+  toggleElement() {
+    const index = this.elementsHidden.indexOf(this.itemSelected);
+    if(index >= 0) {
+      this.elementsHidden.splice(index, 1);
+      this.ifcService.showElement(this.itemSelected);
+    } else {
+      this.elementsHidden.push(this.itemSelected);
+      this.ifcService.hideElement(this.itemSelected);
+    }
   }
 }
