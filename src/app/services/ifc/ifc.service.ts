@@ -243,7 +243,9 @@ export class IfcService {
     this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
-    return found.id;
+    const element = await this.getElementSelected(found.id);
+    console.log(element);
+    return element;
   }
 
   private handleClick = (_event: Event) => {};
@@ -304,5 +306,9 @@ export class IfcService {
     if(select) {
       expressId.forEach(element => this.selectElement(element))
     }
+  }
+
+  async getElementSelected(expressId: number) {
+    return this.ifcViewer?.IFC.getProperties(this.ifcModel.modelID, expressId, true);
   }
 }

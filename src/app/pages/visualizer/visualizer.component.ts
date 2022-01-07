@@ -45,7 +45,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     | IfcRamp
     | IfcBuildingStorey
   )[];
-  itemSelected: number;
+  itemSelected: any;
   loading = false;
   elementsExpanded = false;
   optionsExpanded = false;
@@ -80,13 +80,14 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.spaces = await this.ifcService.getSpaces('STAIR');
     }
     container.ondblclick = async () => {
-      const expressID = await this.ifcService.pick();
+      const expressId = await this.ifcService.pick();
+      console.log(expressId);
       this.elementClip = false;
       if(this.itemSelected) {
-        this.ifcService.showElement([this.itemSelected], false);
+        this.ifcService.showElement([this.itemSelected.expressID], false);
       }
-      if(expressID > 0) {
-        this.itemSelected = expressID;
+      if(expressId !== -1) {
+        this.itemSelected = expressId;
       } else {
         this.itemSelected = null;
         this.ifcService.unselectElement();
@@ -105,23 +106,24 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     return this.container.nativeElement as HTMLElement;
   }
 
-  highlightElement(elementId: number, on: boolean) {
+  highlightElement(expressId: number, on: boolean) {
     if (on) {
-      this.ifcService.highlightElement([elementId]);
+      this.ifcService.highlightElement([expressId]);
     } else {
       this.ifcService.removeHighlights();
     }
   }
 
-  selectElement(elementId: number) {
+  async selectElement(expressId: number) {
     this.ifcService.unselectElement();
-    if (this.itemSelected && this.itemSelected === elementId) {
+    if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
-      if(this.elementsHidden.indexOf(elementId) === -1) {
-        this.ifcService.selectElement(elementId);
+      if(this.elementsHidden.indexOf(expressId) === -1) {
+        this.ifcService.selectElement(expressId);
       }
-      this.itemSelected = elementId;
+      this.itemSelected = await this.ifcService.getElementSelected(expressId);
+      console.log(this.itemSelected);
     }
   }
 
@@ -152,17 +154,17 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   toggleClippingPlane() {
     this.elementClip = !this.elementClip;
-    this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected);
+    this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected.expressID);
   }
 
   toggleElement() {
-    const index = this.elementsHidden.indexOf(this.itemSelected);
+    const index = this.elementsHidden.indexOf(this.itemSelected.expressID);
     if(index >= 0) {
       this.elementsHidden.splice(index, 1);
-      this.ifcService.showElement([this.itemSelected], true);
+      this.ifcService.showElement([this.itemSelected.expressID], true);
     } else {
-      this.elementsHidden.push(this.itemSelected);
-      this.ifcService.hideElement([this.itemSelected]);
+      this.elementsHidden.push(this.itemSelected.expressID);
+      this.ifcService.hideElement([this.itemSelected.expressID]);
     }
   }
 }
