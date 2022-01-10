@@ -91,7 +91,7 @@
   <p>Description: {{ itemSelected.Description.value }}</p>
   <p>Type: {{ itemSelected.ObjectType.value }}</p>
 </div>
-<div class="element" *ngIf="itemSelected">
+<div class="element" *ngIf="itemSelected" [class]="infoExpanded ? 'info-open' : ''">
   <button mat-icon-button (click)="toggleElement()" [disabled]="elementClip">
     <mat-icon>{{ elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'visibility_off' : 'visibility'}}</mat-icon>
   </button>

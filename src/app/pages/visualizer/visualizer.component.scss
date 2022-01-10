@@ -115,15 +115,18 @@
   background-color: white;
   border-radius: 7px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  &.info-open {
+    border-radius: 7px 7px 0 0;
+  }
 }
 
 .info {
   position: absolute;
   right: 10px;
-  top: 125px;
-  z-index: 1;
+  top: 116px;
+  z-index: 2;
   background-color: white;
-  border-radius: 7px;
+  border-radius: 7px 0 7px 7px;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding: 15px;
 }
