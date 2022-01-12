@@ -107,6 +107,59 @@
   }
 }
 
+.floors {
+  position: absolute;
+  bottom: 35px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-content: space-between;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  &-container {
+    padding: 20px;
+    padding-bottom: 40px;
+    transform: rotate(180deg);
+    &-svg {
+      width: 150px;
+      margin-bottom: -20px;
+      cursor: pointer;
+      &:hover {
+        & svg {
+          transform: scale(1.1);  
+          transition: ease-out 0.1s;
+        }
+      }
+      & svg {
+        pointer-events: none;
+        polygon {
+          fill:rgba(255, 255, 255, 0.8); 
+          stroke:rgba(0, 0, 0, 0.2); 
+          stroke-width:1;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  &-number {
+    padding: 15px;
+    & p {
+      height: auto;
+      margin: 100% 0;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 100;
+    }
+    & mat-icon {
+      font-size: 15px;
+      height: 15px;
+      text-align: center;
+      cursor: pointer;
+    }
+  }
+}
+
 .element {
   z-index: 1;
   position: absolute;

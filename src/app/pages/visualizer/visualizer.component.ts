@@ -53,6 +53,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   elementsHidden: number[] = [];
   transparent: boolean = true;
   elementClip: boolean = false;
+  floors: IfcBuildingStorey[];
+  currentFloor = 0;
   spaceTypes: { type: string; obj: number }[];
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
@@ -79,6 +81,9 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
       this.spaces = await this.ifcService.getSpaces('STAIR');
+      this.floors = await this.ifcService.getSpaces('BUILDING_STOREY');
+      this.floors.sort((a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1));
+      console.log(this.floors);
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
@@ -166,5 +171,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.elementsHidden.push(this.itemSelected.expressID);
       this.ifcService.hideElement([this.itemSelected.expressID]);
     }
+  }
+
+  updateFloor(plus: number) {
+    this.currentFloor += plus;
+    console.log(this.currentFloor);
   }
 }
