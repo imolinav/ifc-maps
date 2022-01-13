@@ -54,6 +54,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   transparent: boolean = true;
   elementClip: boolean = false;
   floors: IfcBuildingStorey[];
+  buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
   spaceTypes: { type: string; obj: number }[];
 
@@ -82,24 +83,27 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       await this.ifcService.loadIfcUrl(url);
       this.spaces = await this.ifcService.getSpaces('STAIR');
       this.floors = await this.ifcService.getSpaces('BUILDING_STOREY');
-      this.floors.sort((a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1));
+      this.floors.sort(
+        (a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1)
+      );
+      this.buildingFloors = this.calculateFloors(this.floors);
       console.log(this.floors);
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
       console.log(element);
       this.elementClip = false;
-      if(this.itemSelected) {
+      if (this.itemSelected) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
       }
-      if(element !== -1) {
+      if (element !== -1) {
         this.itemSelected = element;
       } else {
         this.itemSelected = null;
         this.ifcService.unselectElement();
         this.elementClip = false;
       }
-    }
+    };
     this.loading = false;
   }
 
@@ -125,7 +129,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
-      if(this.elementsHidden.indexOf(expressId) === -1) {
+      if (this.elementsHidden.indexOf(expressId) === -1) {
         this.ifcService.selectElement(expressId);
       }
       this.itemSelected = await this.ifcService.getElementSelected(expressId);
@@ -150,21 +154,30 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   toggleTransparency(transparencyValue: number) {
     this.transparent = !this.transparent;
-    this.ifcService.changeTransparency(this.transparent, transparencyValue/100);
+    this.ifcService.changeTransparency(
+      this.transparent,
+      transparencyValue / 100
+    );
   }
 
   updateTransparency(transparencyValue: number) {
-    this.ifcService.changeTransparency(this.transparent, transparencyValue/100);
+    this.ifcService.changeTransparency(
+      this.transparent,
+      transparencyValue / 100
+    );
   }
 
   toggleClippingPlane() {
     this.elementClip = !this.elementClip;
-    this.ifcService.toggleClippingPlane(this.elementClip, this.itemSelected.expressID);
+    this.ifcService.toggleClippingPlane(
+      this.elementClip,
+      this.itemSelected.expressID
+    );
   }
 
   toggleElement() {
     const index = this.elementsHidden.indexOf(this.itemSelected.expressID);
-    if(index >= 0) {
+    if (index >= 0) {
       this.elementsHidden.splice(index, 1);
       this.ifcService.showElement([this.itemSelected.expressID], true);
     } else {
@@ -173,8 +186,67 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  updateFloor(plus: number) {
-    this.currentFloor += plus;
-    console.log(this.currentFloor);
+  calculateFloors(floors: IfcBuildingStorey[]) {
+    let sub = floors.findIndex((x) => x.Elevation.value >= 0);
+    let buildingFloors: { expressID: number; floor: number; height: number }[] =
+      [];
+    if (sub > 0) {
+      for (let i = 0; i < sub; i++) {
+        const floorNum = Number(floors[i].Name.value.match(/-?\d+/)[0])
+          ? Number(floors[i].Name.value.match(/-?\d+/)[0])
+          : i - sub;
+        buildingFloors.push({
+          expressID: floors[i].expressID,
+          floor: floorNum,
+          height: floors[i].Elevation.value,
+        });
+      }
+    }
+    for (let j = sub; j < floors.length; j++) {
+      const floorNum = Number(floors[j].Name.value.match(/-?\d+/)[0])
+        ? Number(floors[j].Name.value.match(/-?\d+/)[0])
+        : j - sub;
+      buildingFloors.push({
+        expressID: floors[j].expressID,
+        floor: floorNum,
+        height: floors[j].Elevation.value,
+      });
+    }
+    this.currentFloor = buildingFloors[sub].floor;
+    return buildingFloors;
+  }
+
+  selectFloor(floor: number) {
+    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor);
+    this.currentFloor = selectedFloor.floor;
+    this.selectElement(selectedFloor.expressID);
+  }
+
+  floorUp() {
+    const selectedFloor = this.buildingFloors.find(
+      (f) => f.floor > this.currentFloor
+    );
+    if (selectedFloor) {
+      this.currentFloor = selectedFloor.floor;
+      this.selectElement(selectedFloor.expressID);
+    }
+  }
+
+  floorDown() {
+    console.log(this.buildingFloors.length);
+    for (let i = this.buildingFloors.length - 1; i >= 0; i--) {
+      console.log(i);
+      if (this.buildingFloors[i].floor < this.currentFloor) {
+        this.currentFloor = this.buildingFloors[i].floor;
+        this.selectElement(this.buildingFloors[i].expressID);
+        break;
+      }
+    }
+  }
+
+  checkIfFloorSelected() {
+    return this.buildingFloors.some(
+      (floor) => floor.expressID === this.itemSelected.expressID
+    );
   }
 }
