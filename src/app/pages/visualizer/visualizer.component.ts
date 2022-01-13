@@ -87,11 +87,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         (a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1)
       );
       this.buildingFloors = this.calculateFloors(this.floors);
-      console.log(this.floors);
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
-      console.log(element);
+      // console.log(element);
       this.elementClip = false;
       if (this.itemSelected) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
@@ -233,9 +232,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   floorDown() {
-    console.log(this.buildingFloors.length);
     for (let i = this.buildingFloors.length - 1; i >= 0; i--) {
-      console.log(i);
       if (this.buildingFloors[i].floor < this.currentFloor) {
         this.currentFloor = this.buildingFloors[i].floor;
         this.selectElement(this.buildingFloors[i].expressID);
