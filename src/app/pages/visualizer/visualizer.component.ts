@@ -255,4 +255,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       (floor) => floor.expressID === this.itemSelected.expressID
     );
   }
+
+  mySortingFunction = (a, b) => {
+    return a.key > b.key ? -1 : 1;
+  }
 }

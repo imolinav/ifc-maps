@@ -57,7 +57,7 @@
 
 .floors {
   position: absolute;
-  bottom: 35px;
+  bottom: 10px;
   right: 10px;
   z-index: 1;
   display: flex;
@@ -126,15 +126,13 @@
   display: grid;
   padding: 3px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  &.info-open {
-    border-radius: 7px 7px 0 0;
-  }
 }
 
 .elements {
   z-index: 1;
   position: absolute;
   top: 75px;
+  right: 65px;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   &-search {
@@ -170,11 +168,10 @@
 
 .info {
   position: absolute;
-  right: 10px;
-  top: 116px;
+  right: 65px;
+  top: 300px;
   z-index: 2;
   background-color: white;
-  border-radius: 7px 0 7px 7px;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding: 15px;
 }
