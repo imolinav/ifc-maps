@@ -91,7 +91,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
-      // console.log(element);
+      console.log(element);
       this.elementClip = false;
       if (this.itemSelected && this.elementsHidden.indexOf(this.itemSelected.expressID) === -1) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
@@ -126,6 +126,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   async selectElement(expressId: number) {
     this.ifcService.unselectElement();
     this.ifcService.removeAllClippingPlanes();
+    this.elementClip = false;
     if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
@@ -147,30 +148,16 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   toggleElements() {
-    this.transparencyExpanded = false;
-    this.layersExpanded = false;
     this.elementsExpanded = !this.elementsExpanded;
   }
 
   toggleTransparency() {
-    this.elementsExpanded = false;
-    this.layersExpanded = false;
     this.transparencyExpanded = !this.transparencyExpanded;
   }
 
   toggleLayers() {
-    this.elementsExpanded = false;
-    this.transparencyExpanded = false;
     this.layersExpanded = !this.layersExpanded;
   }
-
-  /* toggleTransparency(transparencyValue: number) {
-    this.transparent = !this.transparent;
-    this.ifcService.changeTransparency(
-      this.transparent,
-      transparencyValue / 100
-    );
-  } */
 
   updateTransparency(transparencyValue: number, toggle?: boolean) {
     if (toggle) {
