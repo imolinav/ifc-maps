@@ -183,4 +183,5 @@
   <p>Description: {{ itemSelected.Description.value }}</p>
   <p>Type: {{ itemSelected.ObjectType.value }}</p>
 </div>
+<div #clipContainer class="clip" [ngClass]="elementClip ? '' : 'clip-hidden'"></div>
 <div #threeContainer class="viewer"></div>

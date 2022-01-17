@@ -60,6 +60,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   spaceTypes: { type: string; obj: number }[];
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
+  @ViewChild('clipContainer', { static: true }) clipContainer?: ElementRef;
 
   constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
 
@@ -113,6 +114,11 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   private getContainer() {
     if (!this.container) return null;
     return this.container.nativeElement as HTMLElement;
+  }
+
+  private getClipContainer() {
+    if (!this.clipContainer) return null;
+    return this.clipContainer.nativeElement as HTMLElement;
   }
 
   highlightElement(expressId: number, on: boolean) {
@@ -223,6 +229,13 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
     this.currentFloor = selectedFloor.floor;
     this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
+    setTimeout(async () => {
+      const clipContainer = this.getClipContainer();
+      if(clipContainer) {
+        this.ifcService.startIfcClipViewer(clipContainer);
+        await this.ifcService.loadIfcUrl(`assets/ifc/${this.ifcId}.ifc`);
+      }
+    }, 1000);
   }
 
   toggleFloor(floor: number) {

@@ -1,7 +1,11 @@
 import {
+  Color,
   DoubleSide,
   MeshLambertMaterial,
+  PerspectiveCamera,
+  Scene,
   Vector3,
+  WebGLRenderer,
 } from 'three';
 import {
   LoaderSettings,
@@ -31,6 +35,7 @@ import {
   IFCDOOR,
   IFCPILE,
   IFCRAMP,
+  IfcPlane,
 } from 'web-ifc';
 import { IfcViewerAPI } from 'web-ifc-viewer';
 import {
@@ -41,8 +46,10 @@ import {
 
 export class IfcService {
   ifcViewer?: IfcViewerAPI;
+  ifcClipViewer?: IfcViewerAPI;
   ifcModel: any;
   container?: HTMLElement;
+  clipContainer?: HTMLElement;
   spaces: (
     | IfcSpace
     | IfcWall
@@ -92,12 +99,38 @@ export class IfcService {
     this.setupInputs();
   }
 
+  startIfcClipViewer(clipContainer: HTMLElement) {
+    const scene = new Scene();
+    scene.background = new Color('white');
+    const renderer = new WebGLRenderer();
+    const plane = this.ifcViewer?.clipper.planes[0].planeMesh;
+    const fov = 35; // AKA Field of View
+    const aspect = clipContainer.clientWidth / clipContainer.clientHeight;
+    const near = 0.1; // the near clipping plane
+    const far = 100; // the far clipping plane
+
+    const camera = new PerspectiveCamera(fov, aspect, near, far);
+
+    camera.position.set(0, 0, 10);
+    scene.add(plane);
+    renderer.setSize(clipContainer.clientWidth, clipContainer.clientHeight);
+
+    // finally, set the pixel ratio so that our scene will look good on HiDPI displays
+    renderer.setPixelRatio(window.devicePixelRatio);
+    clipContainer.append(renderer.domElement);
+    renderer.render(scene, camera);
+    /* if (!clipContainer) return this.notFoundError('clipContainer');
+    this.clipContainer = clipContainer;
+    this.setupClippingScene(); */
+  }
+
   setupIfcScene() {
     if (!this.container) return;
     const preselectMaterial = this.newMaterial(0xfbc02d, 0.2);
     const selectMaterial = this.newMaterial(0xfbc02d, 0.5);
     this.ifcViewer = new IfcViewerAPI({
       container: this.container,
+      // backgroundColor: new Color(255, 255, 255),
       preselectMaterial,
       selectMaterial,
     });
@@ -117,6 +150,20 @@ export class IfcService {
     this.container.onmousemove = this.handleMouseMove;
   }
 
+  setupClippingScene() {
+    if (!this.clipContainer) return;
+    const preselectMaterial = this.newMaterial(0xfbc02d, 0.2);
+    const selectMaterial = this.newMaterial(0xfbc02d, 0.5);
+    this.ifcViewer = new IfcViewerAPI({
+      container: this.clipContainer,
+      backgroundColor: new Color(255, 255, 255),
+      preselectMaterial,
+      selectMaterial,
+    });
+    this.ifcViewer?.IFC.setWasmPath('assets/wasm/');
+    this.ifcViewer?.IFC.applyWebIfcConfig(this.webConfig);
+  }
+
   /* subscribeOnSelect(action: (modelID: number, id: number) => void) {
     this.onSelectActions.push(action);
   } */
@@ -134,6 +181,10 @@ export class IfcService {
       this.ifcModel = res;
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
     });
+  }
+
+  async loadClippingPlane(plane: IfcPlane) {
+    await this.ifcClipViewer?.IFC.loader.ifcManager.ifcAPI.CreateModel();
   }
 
   select(modelID: number, expressId: number, pick = true) {
@@ -159,9 +210,18 @@ export class IfcService {
   toggleClippingPlane(on: boolean, expressId: number) {
     if (on) {
       const modelCenter = {
-        x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
-        y: (this.ifcModel?.['geometry'].boundingBox.max.y + this.ifcModel?.['geometry'].boundingBox.min.y) / 2,
-        z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+        x:
+          (this.ifcModel?.['geometry'].boundingBox.max.x +
+            this.ifcModel?.['geometry'].boundingBox.min.x) /
+          2,
+        y:
+          (this.ifcModel?.['geometry'].boundingBox.max.y +
+            this.ifcModel?.['geometry'].boundingBox.min.y) /
+          2,
+        z:
+          (this.ifcModel?.['geometry'].boundingBox.max.z +
+            this.ifcModel?.['geometry'].boundingBox.min.z) /
+          2,
       };
 
       const selection = this.ifcViewer?.IFC.selection.mesh;
@@ -240,13 +300,23 @@ export class IfcService {
   toggleFloorClippingPlane(height: number, minHeight: number) {
     // this.removeAllClippingPlanes();
     const modelCenter = {
-      x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
-      z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+      x:
+        (this.ifcModel?.['geometry'].boundingBox.max.x +
+          this.ifcModel?.['geometry'].boundingBox.min.x) /
+        2,
+      z:
+        (this.ifcModel?.['geometry'].boundingBox.max.z +
+          this.ifcModel?.['geometry'].boundingBox.min.z) /
+        2,
     };
     const normal = new Vector3(0, -1, 0);
-    const planeHeight = this.ifcModel?.['geometry'].boundingBox.min.y + Math.abs(minHeight/1000) + (height/1000)
+    const planeHeight =
+      this.ifcModel?.['geometry'].boundingBox.min.y +
+      Math.abs(minHeight / 1000) +
+      height / 1000;
     const point = new Vector3(modelCenter.x, planeHeight, modelCenter.z);
     this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
+    console.log(this.ifcViewer?.clipper.planes);
   }
 
   removeAllClippingPlanes() {
@@ -287,7 +357,11 @@ export class IfcService {
   }
 
   selectElement(expressId: number) {
-    this.ifcViewer?.IFC.selection.pickByID(this.ifcModel.modelID, [expressId], true);
+    this.ifcViewer?.IFC.selection.pickByID(
+      this.ifcModel.modelID,
+      [expressId],
+      true
+    );
   }
 
   unselectElement() {
@@ -299,7 +373,12 @@ export class IfcService {
   }
 
   changeTransparency(on: boolean, value: number) {
-    this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, value, true);
+    this.ifcViewer?.IFC.setModelTranslucency(
+      this.ifcModel.modelID,
+      on,
+      value,
+      true
+    );
   }
 
   getSpaceTypes() {
@@ -307,18 +386,28 @@ export class IfcService {
   }
 
   hideElement(expressId: number[]) {
-    this.ifcViewer?.IFC.loader.ifcManager.hideItems(this.ifcModel.modelID, expressId);
+    this.ifcViewer?.IFC.loader.ifcManager.hideItems(
+      this.ifcModel.modelID,
+      expressId
+    );
     this.unselectElement();
   }
 
   showElement(expressId: number[], select?: boolean) {
-    this.ifcViewer?.IFC.loader.ifcManager.showItems(this.ifcModel.modelID, expressId);
-    if(select) {
-      expressId.forEach(element => this.selectElement(element))
+    this.ifcViewer?.IFC.loader.ifcManager.showItems(
+      this.ifcModel.modelID,
+      expressId
+    );
+    if (select) {
+      expressId.forEach((element) => this.selectElement(element));
     }
   }
 
   async getElementSelected(expressId: number) {
-    return this.ifcViewer?.IFC.getProperties(this.ifcModel.modelID, expressId, true);
+    return this.ifcViewer?.IFC.getProperties(
+      this.ifcModel.modelID,
+      expressId,
+      true
+    );
   }
 }

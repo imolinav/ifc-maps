@@ -178,3 +178,15 @@
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding: 15px;
 }
+
+.clip {
+  position: absolute;
+  z-index: 1;
+  width: 500px;
+  height: 300px;
+  background-color: white;
+  top: 75px;
+  &-hidden {
+    z-index: -1;
+  }
+}
