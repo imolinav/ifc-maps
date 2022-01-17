@@ -10,12 +10,21 @@
     <h2>{{ "VISUALIZER.LOADING.TEXT" | transloco }}</h2>
   </div>
 </div>
-<div class="elements" *ngIf="spaces">
-  <div class="elements-header" (click)="expandElements()">
+<div class="options" *ngIf="spaces">
+  <button mat-icon-button (click)="toggleElements()">
+    <mat-icon>meeting_room</mat-icon>
+  </button>
+  <button mat-icon-button (click)="toggleTransparency()">
+    <mat-icon>flip</mat-icon>
+  </button>
+  <button mat-icon-button (click)="toggleLayers()">
+    <mat-icon>layers</mat-icon>
+  </button>
+  <!-- <div class="elements-header" (click)="expandElements()">
     <h3>{{ "VISUALIZER.ELEMENTS.TITLE" | transloco }}</h3>
     <mat-icon>{{ elementsExpanded ? "expand_less" : "expand_more" }}</mat-icon>
-  </div>
-  <div
+  </div> -->
+  <!-- <div
     class="elements-body"
     [ngClass]="elementsExpanded ? '' : 'element-body-collapsed'"
   >
@@ -84,6 +93,66 @@
       >
       </mat-slider>
     </div>
+  </div> -->
+</div>
+<div class="transparency" *ngIf="transparencyExpanded">
+  <mat-checkbox
+    class="elements-body-search-checkbox"
+    [checked]="transparent"
+    (change)="updateTransparency(transparencyValue.value, true)"
+    >{{ "VISUALIZER.OPTIONS.ITEMS.TRANSPARENCY" | transloco }}</mat-checkbox
+  >
+  <mat-slider
+    class="elements-body-search-slider"
+    max="100"
+    min="0"
+    step="1"
+    value="10"
+    #transparencyValue
+    (change)="updateTransparency(transparencyValue.value)"
+    [disabled]="!transparent"
+  >
+  </mat-slider>
+</div>
+<div class="elements"
+  *ngIf="elementsExpanded"
+>
+  <div class="elements-search">
+    <select
+      class="form-select"
+      aria-label="Default select example"
+      #spaceType
+      (change)="getSpaces(spaceType.value)"
+      *ngIf="spaceTypes"
+    >
+      <option disabled>
+        {{ "VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER" | transloco }}
+      </option>
+      <option
+        [selected]="spaceType.type === 'STAIR'"
+        [value]="spaceType.type"
+        *ngFor="let spaceType of spaceTypes"
+      >
+        {{ "VISUALIZER.ELEMENTS.ITEMS." + spaceType.type | transloco }}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="spaces && spaces.length > 0" class="elements-items">
+    <p
+      class="elements-items-item"
+      *ngFor="let item of spaces"
+      [class]="item.expressID === itemSelected?.expressID ? 'selected' : ''"
+      (mouseover)="highlightElement(item.expressID, true)"
+      (click)="selectElement(item.expressID)"
+      (mouseout)="highlightElement(item.expressID, false)"
+    >
+      {{ item.Name.value }}
+    </p>
+  </div>
+  <div *ngIf="!spaces || spaces.length === 0" class="elements-items">
+    <p class="elements-items-no-items">
+      {{ "VISUALIZER.ELEMENTS.NO_ITEMS" | transloco }}
+    </p>
   </div>
 </div>
 <div class="info" *ngIf="itemSelected && infoExpanded">
@@ -91,8 +160,7 @@
   <p>Description: {{ itemSelected.Description.value }}</p>
   <p>Type: {{ itemSelected.ObjectType.value }}</p>
 </div>
-<div
-  class="element"
+<div class="element"
   *ngIf="itemSelected"
   [class]="infoExpanded ? 'info-open' : ''"
 >
@@ -114,13 +182,27 @@
     <mat-icon>info</mat-icon>
   </button>
 </div>
-<div class="floors" *ngIf="buildingFloors">
+<div class="floors" *ngIf="buildingFloors && layersExpanded">
   <div class="floors-number">
-    <button (click)="floorUp()" [disabled]="buildingFloors && currentFloor === buildingFloors[buildingFloors.length - 1].floor">
+    <button
+      (click)="floorUp()"
+      [disabled]="
+        buildingFloors &&
+        currentFloor === buildingFloors[buildingFloors.length - 1].floor
+      "
+    >
       <mat-icon>expand_less</mat-icon>
     </button>
-    <p [ngClass]="itemSelected && checkIfFloorSelected() ? '' : 'inactive'" (click)="toggleFloor(currentFloor)">{{ currentFloor }}</p>
-    <button (click)="floorDown()" [disabled]="buildingFloors && currentFloor === buildingFloors[0].floor">
+    <p
+      [ngClass]="itemSelected && checkIfFloorSelected() ? '' : 'inactive'"
+      (click)="toggleFloor(currentFloor)"
+    >
+      {{ currentFloor }}
+    </p>
+    <button
+      (click)="floorDown()"
+      [disabled]="buildingFloors && currentFloor === buildingFloors[0].floor"
+    >
       <mat-icon>expand_more</mat-icon>
     </button>
   </div>
@@ -133,7 +215,11 @@
       <svg height="40" width="150">
         <polygon
           points="76,2 74,2 0,19 0,21 74,38 76,38 150,21 150,19"
-          [ngClass]="itemSelected && itemSelected.expressID === floor.expressID ? 'active' : ''"
+          [ngClass]="
+            itemSelected && itemSelected.expressID === floor.expressID
+              ? 'active'
+              : ''
+          "
         />
       </svg>
     </div>

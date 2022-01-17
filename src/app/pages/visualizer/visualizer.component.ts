@@ -48,7 +48,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   itemSelected: any;
   loading = false;
   elementsExpanded = false;
-  optionsExpanded = false;
+  transparencyExpanded = false;
+  layersExpanded = false;
   infoExpanded = false;
   elementsHidden: number[] = [];
   transparent: boolean = true;
@@ -145,25 +146,36 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.loadModel(ifcUrl);
   }
 
-  expandElements() {
-    this.optionsExpanded = false;
+  toggleElements() {
+    this.transparencyExpanded = false;
+    this.layersExpanded = false;
     this.elementsExpanded = !this.elementsExpanded;
   }
 
-  expandOptions() {
+  toggleTransparency() {
     this.elementsExpanded = false;
-    this.optionsExpanded = !this.optionsExpanded;
+    this.layersExpanded = false;
+    this.transparencyExpanded = !this.transparencyExpanded;
   }
 
-  toggleTransparency(transparencyValue: number) {
+  toggleLayers() {
+    this.elementsExpanded = false;
+    this.transparencyExpanded = false;
+    this.layersExpanded = !this.layersExpanded;
+  }
+
+  /* toggleTransparency(transparencyValue: number) {
     this.transparent = !this.transparent;
     this.ifcService.changeTransparency(
       this.transparent,
       transparencyValue / 100
     );
-  }
+  } */
 
-  updateTransparency(transparencyValue: number) {
+  updateTransparency(transparencyValue: number, toggle?: boolean) {
+    if (toggle) {
+      this.transparent = !this.transparent;
+    }
     this.ifcService.changeTransparency(
       this.transparent,
       transparencyValue / 100
