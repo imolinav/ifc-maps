@@ -92,7 +92,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       const element = await this.ifcService.pick();
       // console.log(element);
       this.elementClip = false;
-      if (this.itemSelected) {
+      if (this.itemSelected && this.elementsHidden.indexOf(this.itemSelected.expressID) === -1) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
       }
       if (element !== -1) {
@@ -100,7 +100,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       } else {
         this.itemSelected = null;
         this.ifcService.unselectElement();
-        this.elementClip = false;
       }
     };
     this.loading = false;
@@ -125,6 +124,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   async selectElement(expressId: number) {
     this.ifcService.unselectElement();
+    this.ifcService.removeAllClippingPlanes();
     if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
@@ -132,6 +132,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         this.ifcService.selectElement(expressId);
       }
       this.itemSelected = await this.ifcService.getElementSelected(expressId);
+      const floor = this.buildingFloors.find((item) => item.expressID === this.itemSelected.expressID);
+      if(floor) {
+        this.selectFloor(floor);
+      }
     }
   }
 
@@ -215,10 +219,16 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     return buildingFloors;
   }
 
-  selectFloor(floor: number) {
-    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor);
+  selectFloor(floor: { expressID: number, floor: number, height: number }) {
+    this.elementClip = !this.elementClip;
+    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
     this.currentFloor = selectedFloor.floor;
-    this.selectElement(selectedFloor.expressID);
+    this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
+  }
+
+  toggleFloor(floor: number) {
+    const floorSelected = this.buildingFloors.find(f => f.floor === floor);
+    this.selectElement(floorSelected.expressID);
   }
 
   floorUp() {

@@ -233,9 +233,24 @@ export class IfcService {
       this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
       this.unselectElement();
     } else {
-      this.ifcViewer?.clipper.deleteAllPlanes();
       this.showElement([expressId], true);
     }
+  }
+
+  toggleFloorClippingPlane(height: number, minHeight: number) {
+    // this.removeAllClippingPlanes();
+    const modelCenter = {
+      x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
+      z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+    };
+    const normal = new Vector3(0, -1, 0);
+    const planeHeight = this.ifcModel?.['geometry'].boundingBox.min.y + Math.abs(minHeight/1000) + (height/1000)
+    const point = new Vector3(modelCenter.x, planeHeight, modelCenter.z);
+    this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
+  }
+
+  removeAllClippingPlanes() {
+    this.ifcViewer?.clipper.deleteAllPlanes();
   }
 
   async pick() {
@@ -282,10 +297,6 @@ export class IfcService {
   removeHighlights() {
     this.ifcViewer?.IFC.unHighlightIfcItems();
   }
-
-  /* toggleTransparency(on: boolean) {
-    this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, 0.1, true);
-  } */
 
   changeTransparency(on: boolean, value: number) {
     this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, value, true);
