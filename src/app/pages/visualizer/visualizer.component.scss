@@ -70,13 +70,14 @@
     margin: auto 0;
     transform: rotate(180deg);
     &-svg {
-      width: 150px;
-      margin-bottom: -20px;
+      width: 100px;
+      margin-bottom: -30px;
       cursor: pointer;
+      transition: all ease-out 0.2s;
       &:hover {
+        padding: 25px 0;
         & svg {
           transform: scale(1.1);
-          transition: ease-out 0.1s;
         }
       }
       & svg {
@@ -97,7 +98,7 @@
     padding: 15px;
     & p {
       height: auto;
-      margin: 100% 0;
+      margin: 75% 0;
       text-align: center;
       font-size: 25px;
       font-weight: 100;

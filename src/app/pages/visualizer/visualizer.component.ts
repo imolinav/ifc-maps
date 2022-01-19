@@ -52,8 +52,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   layersExpanded = false;
   infoExpanded = false;
   elementsHidden: number[] = [];
-  transparent: boolean = true;
-  elementClip: boolean = false;
+  transparent = true;
+  elementClip = false;
   floors: IfcBuildingStorey[];
   buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
