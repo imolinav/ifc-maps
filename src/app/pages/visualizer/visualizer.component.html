@@ -47,9 +47,15 @@
   <button
     mat-icon-button
     (click)="toggleElement()"
-    [color]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'accent' : ''"
+    [color]="
+      elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'accent' : ''
+    "
     [disabled]="elementClip"
-    [matTooltip]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'Ver elemento' : 'Ocultar elemento'"
+    [matTooltip]="
+      elementsHidden.indexOf(this.itemSelected.expressID) >= 0
+        ? 'Ver elemento'
+        : 'Ocultar elemento'
+    "
     [matTooltipPosition]="'left'"
   >
     <mat-icon>{{
@@ -181,6 +187,16 @@
 </div>
 <div class="info" *ngIf="itemSelected && infoExpanded">
   <!-- <h3 *ngIf="itemSelected.Name.value">{{ itemSelected.Name.value }}</h3> -->
-  <p *ngFor="let item of itemSelected | keyvalue:mySortingFunction">{{ item.key }}: {{ item.value }}</p>
+  <ng-container
+    *ngFor="let item of itemSelected | keyvalue: mySortingFunction"
+  >
+    <p
+      *ngIf="item.key !== 'mats' && item.key !== 'psets' && item.key !== 'type'"
+      class="info-item"
+    >
+      <span class="info-item-title">{{ item.key }}:</span
+      > {{ item.value ? isObject(item.value) ? item.value['value'] : item.value : "-" }}
+    </p>
+  </ng-container>
 </div>
 <div #threeContainer class="viewer"></div>

@@ -259,4 +259,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   mySortingFunction = (a, b) => {
     return a.key > b.key ? -1 : 1;
   }
+
+  isObject(item: any) {
+    return typeof item === 'object';
+  }
 }
