@@ -77,7 +77,10 @@
       &:hover {
         padding: 25px 0;
         & svg {
-          transform: scale(1.1);
+          transform: scale(1.2);
+          polygon {
+            stroke: rgba(0, 0, 0, 0.5);
+          }
         }
       }
       & svg {
@@ -89,6 +92,7 @@
           pointer-events: none;
           &.active {
             fill: rgba(231, 242, 255, 0.8);
+            stroke: rgba(111, 176, 255, 0.8);
           }
         }
       }
