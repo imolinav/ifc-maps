@@ -154,7 +154,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   toggleTransparency() {
-    this.elementClip = false;
+    this.elementsExpanded = false;
     this.transparencyExpanded = !this.transparencyExpanded;
   }
 
