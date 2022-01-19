@@ -76,7 +76,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  async loadModel(url: string) {
+  private async loadModel(url: string) {
     this.loading = true;
     const container = this.getContainer();
     if (container) {
@@ -141,10 +141,11 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  readModel(event) {
-    const file = event.target.files[0];
-    const ifcUrl = URL.createObjectURL(file);
-    this.loadModel(ifcUrl);
+  private selectFloor(floor: { expressID: number, floor: number, height: number }) {
+    this.elementClip = !this.elementClip;
+    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
+    this.currentFloor = selectedFloor.floor;
+    this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
   }
 
   toggleElements() {
@@ -155,10 +156,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.transparencyExpanded = !this.transparencyExpanded;
   }
 
-  toggleLayers() {
-    this.layersExpanded = !this.layersExpanded;
-  }
-
   updateTransparency(transparencyValue: number, toggle?: boolean) {
     if (toggle) {
       this.transparent = !this.transparent;
@@ -167,6 +164,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.transparent,
       transparencyValue / 100
     );
+  }
+
+  toggleLayers() {
+    this.layersExpanded = !this.layersExpanded;
   }
 
   toggleClippingPlane() {
@@ -188,7 +189,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  calculateFloors(floors: IfcBuildingStorey[]) {
+  private calculateFloors(floors: IfcBuildingStorey[]) {
     let sub = floors.findIndex((x) => x.Elevation.value >= 0);
     let buildingFloors: { expressID: number; floor: number; height: number }[] =
       [];
@@ -216,13 +217,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
     this.currentFloor = buildingFloors[sub].floor;
     return buildingFloors;
-  }
-
-  selectFloor(floor: { expressID: number, floor: number, height: number }) {
-    this.elementClip = !this.elementClip;
-    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
-    this.currentFloor = selectedFloor.floor;
-    this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
   }
 
   toggleFloor(floor: number) {
