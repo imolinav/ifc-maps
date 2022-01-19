@@ -91,7 +91,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
-      console.log(element);
+      // console.log(element);
       this.elementClip = false;
       if (this.itemSelected && this.elementsHidden.indexOf(this.itemSelected.expressID) === -1) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
@@ -178,6 +178,9 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.elementClip,
       this.itemSelected.expressID
     );
+    if(!this.elementClip && this.buildingFloors.find(item => item.expressID === this.itemSelected.expressID)) {
+      this.itemSelected = null;
+    }
   }
 
   toggleElement() {

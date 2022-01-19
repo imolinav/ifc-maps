@@ -233,6 +233,7 @@ export class IfcService {
       this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
       this.unselectElement();
     } else {
+      this.removeAllClippingPlanes();
       this.showElement([expressId], true);
     }
   }
