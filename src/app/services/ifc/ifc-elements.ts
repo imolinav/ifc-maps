@@ -1,4 +1,4 @@
-export enum IfcElements {
+export const enum IfcElements {
     IFCONTROLLER = 25142252,
     IFCBOILER = 32344328,
     IFCLAMP = 76236018,
