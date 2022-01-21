@@ -15,16 +15,16 @@
     mat-icon-button
     (click)="toggleElements()"
     [color]="elementsExpanded ? 'accent' : ''"
-    matTooltip="Elementos estructurales"
+    [matTooltip]="'VISUALIZER.OPTIONS.STRUCTURAL' | transloco"
     [matTooltipPosition]="'left'"
   >
-    <mat-icon>meeting_room</mat-icon>
+    <mat-icon>widgets</mat-icon>
   </button>
   <button
     mat-icon-button
     (click)="toggleTransparency()"
     [color]="transparencyExpanded ? 'accent' : ''"
-    matTooltip="Transparencia"
+    [matTooltip]="'VISUALIZER.OPTIONS.TRANSPARENCY' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>flip</mat-icon>
@@ -33,7 +33,7 @@
     mat-icon-button
     (click)="toggleLayers()"
     [color]="layersExpanded ? 'accent' : ''"
-    matTooltip="Pisos"
+    [matTooltip]="'VISUALIZER.OPTIONS.FLOORS' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>layers</mat-icon>
@@ -53,8 +53,8 @@
     [disabled]="elementClip"
     [matTooltip]="
       elementsHidden.indexOf(this.itemSelected.expressID) >= 0
-        ? 'Ver elemento'
-        : 'Ocultar elemento'
+        ? ('VISUALIZER.OPTIONS.ELEMENT.SEE' | transloco)
+        : ('VISUALIZER.OPTIONS.ELEMENT.HIDE' | transloco)
     "
     [matTooltipPosition]="'left'"
   >
@@ -69,16 +69,16 @@
     [disabled]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0"
     (click)="toggleClippingPlane()"
     [color]="elementClip ? 'accent' : ''"
-    matTooltip="Recortar"
+    [matTooltip]="'VISUALIZER.OPTIONS.TRANSFORM' | transloco"
     [matTooltipPosition]="'left'"
   >
-    <mat-icon>transform</mat-icon>
+    <mat-icon>crop</mat-icon>
   </button>
   <button
     mat-icon-button
     (click)="infoExpanded = !infoExpanded"
     [color]="infoExpanded ? 'accent' : ''"
-    matTooltip="Info del elemento"
+    [matTooltip]="'VISUALIZER.OPTIONS.INFO' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>info</mat-icon>
