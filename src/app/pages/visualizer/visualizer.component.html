@@ -15,16 +15,16 @@
     mat-icon-button
     (click)="toggleElements()"
     [color]="elementsExpanded ? 'accent' : ''"
-    matTooltip="Elementos estructurales"
+    [matTooltip]="'VISUALIZER.OPTIONS.STRUCTURAL' | transloco"
     [matTooltipPosition]="'left'"
   >
-    <mat-icon>meeting_room</mat-icon>
+    <mat-icon>domain</mat-icon>
   </button>
   <button
     mat-icon-button
     (click)="toggleTransparency()"
     [color]="transparencyExpanded ? 'accent' : ''"
-    matTooltip="Transparencia"
+    [matTooltip]="'VISUALIZER.OPTIONS.TRANSPARENCY' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>flip</mat-icon>
@@ -33,7 +33,7 @@
     mat-icon-button
     (click)="toggleLayers()"
     [color]="layersExpanded ? 'accent' : ''"
-    matTooltip="Pisos"
+    [matTooltip]="'VISUALIZER.OPTIONS.FLOORS' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>layers</mat-icon>
@@ -47,8 +47,15 @@
   <button
     mat-icon-button
     (click)="toggleElement()"
+    [color]="
+      elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'accent' : ''
+    "
     [disabled]="elementClip"
-    [matTooltip]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0 ? 'Ver elemento' : 'Ocultar elemento'"
+    [matTooltip]="
+      elementsHidden.indexOf(this.itemSelected.expressID) >= 0
+        ? ('VISUALIZER.OPTIONS.ELEMENT.SEE' | transloco)
+        : ('VISUALIZER.OPTIONS.ELEMENT.HIDE' | transloco)
+    "
     [matTooltipPosition]="'left'"
   >
     <mat-icon>{{
@@ -62,16 +69,16 @@
     [disabled]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0"
     (click)="toggleClippingPlane()"
     [color]="elementClip ? 'accent' : ''"
-    matTooltip="Recortar"
+    [matTooltip]="'VISUALIZER.OPTIONS.TRANSFORM' | transloco"
     [matTooltipPosition]="'left'"
   >
-    <mat-icon>transform</mat-icon>
+    <mat-icon>crop</mat-icon>
   </button>
   <button
     mat-icon-button
     (click)="infoExpanded = !infoExpanded"
     [color]="infoExpanded ? 'accent' : ''"
-    matTooltip="Info del elemento"
+    [matTooltip]="'VISUALIZER.OPTIONS.INFO' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>info</mat-icon>
@@ -165,9 +172,9 @@
       *ngFor="let floor of buildingFloors"
       (click)="selectElement(floor.expressID)"
     >
-      <svg height="40" width="150">
+      <svg height="40" width="100">
         <polygon
-          points="76,2 74,2 0,19 0,21 74,38 76,38 150,21 150,19"
+          points="51,2 48,2 0,19 0,21 48,38 51,38 100,21 100,19"
           [ngClass]="
             itemSelected && itemSelected.expressID === floor.expressID
               ? 'active'
@@ -179,9 +186,18 @@
   </div>
 </div>
 <div class="info" *ngIf="itemSelected && infoExpanded">
-  <h3>{{ itemSelected.Name.value }}</h3>
-  <p>Description: {{ itemSelected.Description.value }}</p>
-  <p>Type: {{ itemSelected.ObjectType.value }}</p>
+  <!-- <h3 *ngIf="itemSelected.Name.value">{{ itemSelected.Name.value }}</h3> -->
+  <ng-container
+    *ngFor="let item of itemSelected | keyvalue: mySortingFunction"
+  >
+    <p
+      *ngIf="item.key !== 'mats' && item.key !== 'psets' && item.key !== 'type'"
+      class="info-item"
+    >
+      <span class="info-item-title">{{ item.key }}:</span
+      > {{ item.value ? isObject(item.value) ? item.value['value'] : item.value : "-" }}
+    </p>
+  </ng-container>
 </div>
 <div #clipContainer class="clip" [ngClass]="elementClip ? '' : 'clip-hidden'"></div>
 <div #threeContainer class="viewer"></div>

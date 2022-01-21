@@ -52,8 +52,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   layersExpanded = false;
   infoExpanded = false;
   elementsHidden: number[] = [];
-  transparent: boolean = true;
-  elementClip: boolean = false;
+  transparent = true;
+  elementClip = false;
   floors: IfcBuildingStorey[];
   buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
@@ -77,7 +77,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  async loadModel(url: string) {
+  private async loadModel(url: string) {
     this.loading = true;
     const container = this.getContainer();
     if (container) {
@@ -92,7 +92,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
     container.ondblclick = async () => {
       const element = await this.ifcService.pick();
-      console.log(element);
+      // console.log(element);
       this.elementClip = false;
       if (this.itemSelected && this.elementsHidden.indexOf(this.itemSelected.expressID) === -1) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
@@ -147,22 +147,21 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  readModel(event) {
-    const file = event.target.files[0];
-    const ifcUrl = URL.createObjectURL(file);
-    this.loadModel(ifcUrl);
+  private selectFloor(floor: { expressID: number, floor: number, height: number }) {
+    this.elementClip = !this.elementClip;
+    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
+    this.currentFloor = selectedFloor.floor;
+    this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
   }
 
   toggleElements() {
+    this.transparencyExpanded = false;
     this.elementsExpanded = !this.elementsExpanded;
   }
 
   toggleTransparency() {
+    this.elementsExpanded = false;
     this.transparencyExpanded = !this.transparencyExpanded;
-  }
-
-  toggleLayers() {
-    this.layersExpanded = !this.layersExpanded;
   }
 
   updateTransparency(transparencyValue: number, toggle?: boolean) {
@@ -175,12 +174,19 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     );
   }
 
+  toggleLayers() {
+    this.layersExpanded = !this.layersExpanded;
+  }
+
   toggleClippingPlane() {
     this.elementClip = !this.elementClip;
     this.ifcService.toggleClippingPlane(
       this.elementClip,
       this.itemSelected.expressID
     );
+    if(!this.elementClip && this.buildingFloors.find(item => item.expressID === this.itemSelected.expressID)) {
+      this.itemSelected = null;
+    }
   }
 
   toggleElement() {
@@ -194,7 +200,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  calculateFloors(floors: IfcBuildingStorey[]) {
+  private calculateFloors(floors: IfcBuildingStorey[]) {
     let sub = floors.findIndex((x) => x.Elevation.value >= 0);
     let buildingFloors: { expressID: number; floor: number; height: number }[] =
       [];
@@ -224,7 +230,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     return buildingFloors;
   }
 
-  selectFloor(floor: { expressID: number, floor: number, height: number }) {
+  /* selectFloor(floor: { expressID: number, floor: number, height: number }) {
     this.elementClip = !this.elementClip;
     const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
     this.currentFloor = selectedFloor.floor;
@@ -236,7 +242,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         await this.ifcService.loadIfcUrl(`assets/ifc/${this.ifcId}.ifc`);
       }
     }, 1000);
-  }
+  } */
 
   toggleFloor(floor: number) {
     const floorSelected = this.buildingFloors.find(f => f.floor === floor);
@@ -267,5 +273,13 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     return this.buildingFloors.some(
       (floor) => floor.expressID === this.itemSelected.expressID
     );
+  }
+
+  mySortingFunction = (a, b) => {
+    return a.key > b.key ? -1 : 1;
+  }
+
+  isObject(item: any) {
+    return typeof item === 'object';
   }
 }

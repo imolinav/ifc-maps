@@ -80,10 +80,15 @@
             "NO_ITEMS": "The model doesn't have elements of the selected type assigned."
         },
         "OPTIONS": {
-            "TITLE": "Options",
-            "ITEMS": {
-                "TRANSPARENCY": "Transparency"
-            }
+            "STRUCTURAL": "Structural elements",
+            "TRANSPARENCY": "Transparency",
+            "FLOORS": "Floors",
+            "ELEMENT": {
+                "SEE": "Show element",
+                "HIDE": "Hide element"
+            },
+            "CROP": "Crop",
+            "INFO": "Element info"
         }
     } 
 }

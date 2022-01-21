@@ -57,7 +57,7 @@
 
 .floors {
   position: absolute;
-  bottom: 35px;
+  bottom: 10px;
   right: 10px;
   z-index: 1;
   display: flex;
@@ -70,13 +70,17 @@
     margin: auto 0;
     transform: rotate(180deg);
     &-svg {
-      width: 150px;
-      margin-bottom: -20px;
+      width: 100px;
+      margin-bottom: -30px;
       cursor: pointer;
+      transition: all ease-out 0.2s;
       &:hover {
+        padding: 25px 0;
         & svg {
-          transform: scale(1.1);
-          transition: ease-out 0.1s;
+          transform: scale(1.2);
+          polygon {
+            stroke: rgba(0, 0, 0, 0.5);
+          }
         }
       }
       & svg {
@@ -88,6 +92,7 @@
           pointer-events: none;
           &.active {
             fill: rgba(231, 242, 255, 0.8);
+            stroke: rgba(111, 176, 255, 0.8);
           }
         }
       }
@@ -97,7 +102,7 @@
     padding: 15px;
     & p {
       height: auto;
-      margin: 100% 0;
+      margin: 75% 0;
       text-align: center;
       font-size: 25px;
       font-weight: 100;
@@ -126,15 +131,13 @@
   display: grid;
   padding: 3px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  &.info-open {
-    border-radius: 7px 7px 0 0;
-  }
 }
 
 .elements {
   z-index: 1;
   position: absolute;
   top: 75px;
+  right: 65px;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   &-search {
@@ -170,13 +173,24 @@
 
 .info {
   position: absolute;
-  right: 10px;
-  top: 116px;
+  right: 65px;
+  top: 300px;
   z-index: 2;
   background-color: white;
-  border-radius: 7px 0 7px 7px;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding: 15px;
+  &-item {
+    margin-bottom: 15px;
+    &-title {
+      font-weight: 500;
+    }
+    &-second {
+      padding-left: 10px;
+    }
+    &-third {
+      padding-left: 20px;
+    }
+  }
 }
 
 .clip {

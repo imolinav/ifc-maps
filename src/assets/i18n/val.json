@@ -80,10 +80,15 @@
             "NO_ITEMS": "El model no te assignat elements del tipus seleccionat."
         },
         "OPTIONS": {
-            "TITLE": "Opcions",
-            "ITEMS": {
-                "TRANSPARENCY": "Transparència"
-            }
+            "STRUCTURAL": "Elements estructurals",
+            "TRANSPARENCY": "Transparència",
+            "FLOORS": "Pisos",
+            "ELEMENT": {
+                "SEE": "Mostrar element",
+                "HIDE": "Ocultar element"
+            },
+            "CROP": "Retallar",
+            "INFO": "Info de l'element"
         }
     }
 }
