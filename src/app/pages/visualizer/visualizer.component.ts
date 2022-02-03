@@ -47,7 +47,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.route.params.subscribe((res) => {
       this.ifcId = res['id'];
     });
-    this.spaceTypes = this.ifcService.getSpaceTypes();
+    this.ifcService.getSpaceTypes();
   }
 
   async ngAfterContentInit() {

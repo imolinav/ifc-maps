@@ -1,8 +1,4 @@
-import {
-  DoubleSide,
-  MeshLambertMaterial,
-  Vector3,
-} from 'three';
+import { DoubleSide, MeshLambertMaterial, Vector3 } from 'three';
 import {
   LoaderSettings,
   IFCSPACE,
@@ -25,6 +21,8 @@ import {
   computeBoundsTree,
   disposeBoundsTree,
 } from 'three-mesh-bvh';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 interface IfcElement {
   expressID: number;
   Name: {
@@ -32,6 +30,9 @@ interface IfcElement {
   };
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class IfcService {
   ifcViewer?: IfcViewerAPI;
   ifcModel: any;
@@ -57,8 +58,106 @@ export class IfcService {
     { type: 'RAMP', obj: IFCRAMP },
     { type: 'BUILDING_STOREY', obj: IFCBUILDINGSTOREY },
   ];
+  ignoredTypes = [
+    'IFCCONNECTIONCURVEGEOMETRY',
+    'IFCRELCONNECTSPATHELEMENTS',
+    'IFCRELFILLSELEMENT',
+    'IFCTELECOMADDRESS',
+    'IFCAPPLICATION',
+    'IFCORGANIZATION',
+    'IFCACTORROLE',
+    'IFCPERSON',
+    'IFCPERSONANDORGANIZATION',
+    'IFCOWNERHISTORY',
+    'IFCPOSTALADDRESS',
+    'IFCMEMBERTYPE',
+    'IFCMEMBER',
+    'IFCSANITARYTERMINALTYPE',
+    'IFCCARTESIANPOINT',
+    'IFCPOLYLOOP',
+    'IFCFACEOUTERBOUND',
+    'IFCFACE',
+    'IFCOPENSHELL',
+    'IFCFLOWTERMINAL',
+    // 'IFCFURNISHINGELEMENTTYPE',
+    // 'IFCFURNISHINGELEMENT',
+    // 'IFCWALL',
+    // 'IFCBEAMTYPE',
+    // 'IFCBEAM',
+    // 'IFCSLABTYPE',
+    // 'IFCSLAB',
+    // 'IFCRAILINGTYPE',
+    // 'IFCRAILING',
+    // 'IFCSTAIR',
+    'IFCRELVOIDSELEMENT',
+    'IFCOPENINGELEMENT',
+    'IFCPLANE',
+    'IFCPOLYGONALBOUNDEDHALFSPACE',
+    'IFCARBITRARYCLOSEDPROFILEDEF',
+    'IFCBOOLEANCLIPPINGRESULT',
+    'IFCWINDOWLININGPROPERTIES',
+    'IFCWINDOWSTYLE',
+    // 'IFCWINDOW',
+    'IFCDOORLININGPROPERTIES',
+    'IFCDOORSTYLE',
+    'IFCCLOSEDSHELL',
+    'IFCFACEBOUND',
+    'IFCFACETEDBREP',
+    'IFCCIRCLE',
+    'IFCPOLYLINE',
+    'IFCGEOMETRICCURVESET',
+    // 'IFCDOOR',
+    // 'IFCCOLUMNTYPE',
+    // 'IFCCOLUMN',
+    'IFCRELCONTAINEDINSPATIALSTRUCTURE',
+    // 'IFCRELDEFINESBYTYPE',
+    // 'IFCWALLTYPE',
+    // 'IFCBOUNDINGBOX',
+    'IFCRELASSOCIATESMATERIAL',
+    'IFCMATERIALLAYER',
+    'IFCMATERIALLAYERSET',
+    'IFCMATERIALLAYERSETUSAGE',
+    // 'IFCMATERIAL',
+    'IFCGEOMETRICREPRESENTATIONSUBCONTEXT',
+    'IFCGEOMETRICREPRESENTATIONCONTEXT',
+    'IFCCOLOURRGB',
+    'IFCSURFACESTYLESHADING',
+    'IFCSURFACESTYLE',
+    'IFCPRESENTATIONSTYLEASSIGNMENT',
+    'IFCSTYLEDITEM',
+    'IFCAXIS2PLACEMENT2D',
+    'IFCRECTANGLEPROFILEDEF',
+    'IFCEXTRUDEDAREASOLID',
+    'IFCPRESENTATIONLAYERASSIGNMENT',
+    'IFCVECTOR',
+    'IFCLINE',
+    'IFCTRIMMEDCURVE',
+    'IFCSHAPEREPRESENTATION',
+    'IFCPRODUCTDEFINITIONSHAPE',
+    // 'IFCWALLSTANDARDCASE',
+    // 'IFCBUILDINGSTOREY',
+    // 'IFCBUILDING',
+    'IFCLOCALPLACEMENT',
+    'IFCDIRECTION',
+    'IFCAXIS2PLACEMENT3D',
+    'IFCRELAGGREGATES',
+    'IFCSITE',
+    'IFCRELDEFINESBYPROPERTIES',
+    'IFCPROPERTYSINGLEVALUE',
+    'IFCPROPERTYSET',
+    'IFCMONETARYUNIT',
+    'IFCDERIVEDUNIT',
+    'IFCDERIVEDUNITELEMENT',
+    'IFCCONVERSIONBASEDUNIT',
+    'IFCDIMENSIONALEXPONENTS',
+    'IFCMEASUREWITHUNIT',
+    'IFCSIUNIT',
+    'IFCUNITASSIGNMENT',
+    'IFCPROJECT',
+    'IFCSHELLBASEDSURFACEMODEL',
+  ];
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.onSelectActions = [];
     this.ifcProductsType = {};
   }
@@ -127,19 +226,28 @@ export class IfcService {
         break;
       }
     }
-    return await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
+    return (await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
       this.ifcModel.modelID,
       obj,
       true
-    ) as IfcElement[];;
+    )) as IfcElement[];
   }
 
   toggleClippingPlane(on: boolean, expressId: number) {
     if (on) {
       const modelCenter = {
-        x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
-        y: (this.ifcModel?.['geometry'].boundingBox.max.y + this.ifcModel?.['geometry'].boundingBox.min.y) / 2,
-        z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+        x:
+          (this.ifcModel?.['geometry'].boundingBox.max.x +
+            this.ifcModel?.['geometry'].boundingBox.min.x) /
+          2,
+        y:
+          (this.ifcModel?.['geometry'].boundingBox.max.y +
+            this.ifcModel?.['geometry'].boundingBox.min.y) /
+          2,
+        z:
+          (this.ifcModel?.['geometry'].boundingBox.max.z +
+            this.ifcModel?.['geometry'].boundingBox.min.z) /
+          2,
       };
 
       const selection = this.ifcViewer?.IFC.selection.mesh;
@@ -219,11 +327,20 @@ export class IfcService {
   toggleFloorClippingPlane(height: number, minHeight: number) {
     // this.removeAllClippingPlanes();
     const modelCenter = {
-      x: (this.ifcModel?.['geometry'].boundingBox.max.x + this.ifcModel?.['geometry'].boundingBox.min.x) / 2,
-      z: (this.ifcModel?.['geometry'].boundingBox.max.z + this.ifcModel?.['geometry'].boundingBox.min.z) / 2,
+      x:
+        (this.ifcModel?.['geometry'].boundingBox.max.x +
+          this.ifcModel?.['geometry'].boundingBox.min.x) /
+        2,
+      z:
+        (this.ifcModel?.['geometry'].boundingBox.max.z +
+          this.ifcModel?.['geometry'].boundingBox.min.z) /
+        2,
     };
     const normal = new Vector3(0, -1, 0);
-    const planeHeight = this.ifcModel?.['geometry'].boundingBox.min.y + Math.abs(minHeight/1000) + (height/1000)
+    const planeHeight =
+      this.ifcModel?.['geometry'].boundingBox.min.y +
+      Math.abs(minHeight / 1000) +
+      height / 1000;
     const point = new Vector3(modelCenter.x, planeHeight, modelCenter.z);
     this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
   }
@@ -266,7 +383,11 @@ export class IfcService {
   }
 
   selectElement(expressId: number) {
-    this.ifcViewer?.IFC.selection.pickByID(this.ifcModel.modelID, [expressId], true);
+    this.ifcViewer?.IFC.selection.pickByID(
+      this.ifcModel.modelID,
+      [expressId],
+      true
+    );
   }
 
   unselectElement() {
@@ -278,26 +399,55 @@ export class IfcService {
   }
 
   changeTransparency(on: boolean, value: number) {
-    this.ifcViewer?.IFC.setModelTranslucency(this.ifcModel.modelID, on, value, true);
+    this.ifcViewer?.IFC.setModelTranslucency(
+      this.ifcModel.modelID,
+      on,
+      value,
+      true
+    );
   }
 
   getSpaceTypes() {
-    return this.spacesTypes;
+    // return this.spacesTypes;
+    this.httpClient
+      .get('assets/ifc/1014016356.ifc', { responseType: 'text' })
+      .subscribe((res) => {
+        console.log(res);
+        const textRes = '' + res;
+        let spaces = [];
+
+        textRes.match(/(?<==).*?(?=\()/g).map((item) => {
+          if (spaces.indexOf(item) === -1 && this.ignoredTypes.indexOf(item) === -1 && item.indexOf('TYPE') === -1) {
+            spaces.push(item);
+          }
+        });
+        console.log(spaces);
+      });
   }
 
   hideElement(expressId: number[]) {
-    this.ifcViewer?.IFC.loader.ifcManager.hideItems(this.ifcModel.modelID, expressId);
+    this.ifcViewer?.IFC.loader.ifcManager.hideItems(
+      this.ifcModel.modelID,
+      expressId
+    );
     this.unselectElement();
   }
 
   showElement(expressId: number[], select?: boolean) {
-    this.ifcViewer?.IFC.loader.ifcManager.showItems(this.ifcModel.modelID, expressId);
-    if(select) {
-      expressId.forEach(element => this.selectElement(element))
+    this.ifcViewer?.IFC.loader.ifcManager.showItems(
+      this.ifcModel.modelID,
+      expressId
+    );
+    if (select) {
+      expressId.forEach((element) => this.selectElement(element));
     }
   }
 
   async getElementSelected(expressId: number) {
-    return this.ifcViewer?.IFC.getProperties(this.ifcModel.modelID, expressId, true);
+    return this.ifcViewer?.IFC.getProperties(
+      this.ifcModel.modelID,
+      expressId,
+      true
+    );
   }
 }
