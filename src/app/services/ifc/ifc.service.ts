@@ -9,25 +9,12 @@ import {
   IFCWALL,
   IFCSTAIR,
   IFCCOLUMN,
-  IfcSpace,
-  IfcWall,
-  IfcStair,
-  IfcColumn,
   IFCFURNISHINGELEMENT,
   IFCBEAM,
   IFCSLAB,
   IFCRAILING,
   IFCWINDOW,
   IFCBUILDINGSTOREY,
-  IfcFurnishingElement,
-  IfcBeam,
-  IfcSlab,
-  IfcRailing,
-  IfcWindow,
-  IfcBuildingStorey,
-  IfcDoor,
-  IfcRamp,
-  IfcPile,
   IFCDOOR,
   IFCPILE,
   IFCRAMP,
@@ -38,26 +25,17 @@ import {
   computeBoundsTree,
   disposeBoundsTree,
 } from 'three-mesh-bvh';
+interface IfcElement {
+  expressID: number;
+  Name: {
+    value: string;
+  };
+}
 
 export class IfcService {
   ifcViewer?: IfcViewerAPI;
   ifcModel: any;
   container?: HTMLElement;
-  spaces: (
-    | IfcSpace
-    | IfcWall
-    | IfcColumn
-    | IfcStair
-    | IfcFurnishingElement
-    | IfcBeam
-    | IfcSlab
-    | IfcRailing
-    | IfcDoor
-    | IfcWindow
-    | IfcPile
-    | IfcRamp
-    | IfcBuildingStorey
-  )[];
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
   webConfig: LoaderSettings = {
@@ -153,7 +131,7 @@ export class IfcService {
       this.ifcModel.modelID,
       obj,
       true
-    );
+    ) as IfcElement[];;
   }
 
   toggleClippingPlane(on: boolean, expressId: number) {

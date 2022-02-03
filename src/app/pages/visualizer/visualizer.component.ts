@@ -7,21 +7,15 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
-import {
-  IfcBeam,
-  IfcBuildingStorey,
-  IfcColumn,
-  IfcDoor,
-  IfcFurnishingElement,
-  IfcPile,
-  IfcRailing,
-  IfcRamp,
-  IfcSlab,
-  IfcSpace,
-  IfcStair,
-  IfcWall,
-  IfcWindow,
-} from 'web-ifc';
+interface IfcElement {
+  expressID: number;
+  Name: {
+    value: string;
+  };
+  Elevation?: {
+    value: number;
+  }
+}
 
 @Component({
   selector: 'app-visualizer',
@@ -30,21 +24,7 @@ import {
 })
 export class VisualizerComponent implements OnInit, AfterContentInit {
   ifcId: string;
-  spaces: (
-    | IfcSpace
-    | IfcWall
-    | IfcColumn
-    | IfcStair
-    | IfcFurnishingElement
-    | IfcBeam
-    | IfcSlab
-    | IfcRailing
-    | IfcDoor
-    | IfcWindow
-    | IfcPile
-    | IfcRamp
-    | IfcBuildingStorey
-  )[];
+  spaces: IfcElement[];
   itemSelected: any;
   loading = false;
   elementsExpanded = false;
@@ -54,7 +34,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   elementsHidden: number[] = [];
   transparent = true;
   elementClip = false;
-  floors: IfcBuildingStorey[];
+  floors: IfcElement[];
   buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
   spaceTypes: { type: string; obj: number }[];
@@ -82,6 +62,9 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (container) {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
+      /* this.ifcService.getSpaces('STAIR').then((spaces) => {
+        { this.spaces } = spaces;
+      }); */
       this.spaces = await this.ifcService.getSpaces('STAIR');
       this.floors = await this.ifcService.getSpaces('BUILDING_STOREY');
       this.floors.sort(
@@ -194,7 +177,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  private calculateFloors(floors: IfcBuildingStorey[]) {
+  private calculateFloors(floors: IfcElement[]) {
     let sub = floors.findIndex((x) => x.Elevation.value >= 0);
     let buildingFloors: { expressID: number; floor: number; height: number }[] =
       [];
