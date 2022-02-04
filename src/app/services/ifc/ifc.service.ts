@@ -1,34 +1,19 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { DoubleSide, MeshLambertMaterial, Vector3 } from 'three';
-import {
-  LoaderSettings,
-  IFCSPACE,
-  IFCWALL,
-  IFCSTAIR,
-  IFCCOLUMN,
-  IFCFURNISHINGELEMENT,
-  IFCBEAM,
-  IFCSLAB,
-  IFCRAILING,
-  IFCWINDOW,
-  IFCBUILDINGSTOREY,
-  IFCDOOR,
-  IFCPILE,
-  IFCRAMP,
-} from 'web-ifc';
-import { IfcViewerAPI } from 'web-ifc-viewer';
 import {
   acceleratedRaycast,
   computeBoundsTree,
   disposeBoundsTree,
 } from 'three-mesh-bvh';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-interface IfcElement {
-  expressID: number;
-  Name: {
-    value: string;
-  };
-}
+import { LoaderSettings } from 'web-ifc';
+import { IfcViewerAPI } from 'web-ifc-viewer';
+import {
+  IGNORED_TYPES,
+  IfcElements,
+  IfcElement,
+  IfcModel,
+} from '../../pages/visualizer/visualizer.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -43,119 +28,6 @@ export class IfcService {
     COORDINATE_TO_ORIGIN: true,
     USE_FAST_BOOLS: false,
   };
-  spacesTypes = [
-    { type: 'SPACE', obj: IFCSPACE },
-    { type: 'WALL', obj: IFCWALL },
-    { type: 'STAIR', obj: IFCSTAIR },
-    { type: 'COLUMN', obj: IFCCOLUMN },
-    { type: 'FURNISHING_ELEMENT', obj: IFCFURNISHINGELEMENT },
-    { type: 'BEAM', obj: IFCBEAM },
-    { type: 'SLAB', obj: IFCSLAB },
-    { type: 'RAILING', obj: IFCRAILING },
-    { type: 'DOOR', obj: IFCDOOR },
-    { type: 'WINDOW', obj: IFCWINDOW },
-    { type: 'PILE', obj: IFCPILE },
-    { type: 'RAMP', obj: IFCRAMP },
-    { type: 'BUILDING_STOREY', obj: IFCBUILDINGSTOREY },
-  ];
-  ignoredTypes = [
-    'IFCCONNECTIONCURVEGEOMETRY',
-    'IFCRELCONNECTSPATHELEMENTS',
-    'IFCRELFILLSELEMENT',
-    'IFCTELECOMADDRESS',
-    'IFCAPPLICATION',
-    'IFCORGANIZATION',
-    'IFCACTORROLE',
-    'IFCPERSON',
-    'IFCPERSONANDORGANIZATION',
-    'IFCOWNERHISTORY',
-    'IFCPOSTALADDRESS',
-    'IFCMEMBERTYPE',
-    'IFCMEMBER',
-    'IFCSANITARYTERMINALTYPE',
-    'IFCCARTESIANPOINT',
-    'IFCPOLYLOOP',
-    'IFCFACEOUTERBOUND',
-    'IFCFACE',
-    'IFCOPENSHELL',
-    'IFCFLOWTERMINAL',
-    // 'IFCFURNISHINGELEMENTTYPE',
-    // 'IFCFURNISHINGELEMENT',
-    // 'IFCWALL',
-    // 'IFCBEAMTYPE',
-    // 'IFCBEAM',
-    // 'IFCSLABTYPE',
-    // 'IFCSLAB',
-    // 'IFCRAILINGTYPE',
-    // 'IFCRAILING',
-    // 'IFCSTAIR',
-    'IFCRELVOIDSELEMENT',
-    'IFCOPENINGELEMENT',
-    'IFCPLANE',
-    'IFCPOLYGONALBOUNDEDHALFSPACE',
-    'IFCARBITRARYCLOSEDPROFILEDEF',
-    'IFCBOOLEANCLIPPINGRESULT',
-    'IFCWINDOWLININGPROPERTIES',
-    'IFCWINDOWSTYLE',
-    // 'IFCWINDOW',
-    'IFCDOORLININGPROPERTIES',
-    'IFCDOORSTYLE',
-    'IFCCLOSEDSHELL',
-    'IFCFACEBOUND',
-    'IFCFACETEDBREP',
-    'IFCCIRCLE',
-    'IFCPOLYLINE',
-    'IFCGEOMETRICCURVESET',
-    // 'IFCDOOR',
-    // 'IFCCOLUMNTYPE',
-    // 'IFCCOLUMN',
-    'IFCRELCONTAINEDINSPATIALSTRUCTURE',
-    // 'IFCRELDEFINESBYTYPE',
-    // 'IFCWALLTYPE',
-    // 'IFCBOUNDINGBOX',
-    'IFCRELASSOCIATESMATERIAL',
-    'IFCMATERIALLAYER',
-    'IFCMATERIALLAYERSET',
-    'IFCMATERIALLAYERSETUSAGE',
-    // 'IFCMATERIAL',
-    'IFCGEOMETRICREPRESENTATIONSUBCONTEXT',
-    'IFCGEOMETRICREPRESENTATIONCONTEXT',
-    'IFCCOLOURRGB',
-    'IFCSURFACESTYLESHADING',
-    'IFCSURFACESTYLE',
-    'IFCPRESENTATIONSTYLEASSIGNMENT',
-    'IFCSTYLEDITEM',
-    'IFCAXIS2PLACEMENT2D',
-    'IFCRECTANGLEPROFILEDEF',
-    'IFCEXTRUDEDAREASOLID',
-    'IFCPRESENTATIONLAYERASSIGNMENT',
-    'IFCVECTOR',
-    'IFCLINE',
-    'IFCTRIMMEDCURVE',
-    'IFCSHAPEREPRESENTATION',
-    'IFCPRODUCTDEFINITIONSHAPE',
-    // 'IFCWALLSTANDARDCASE',
-    // 'IFCBUILDINGSTOREY',
-    // 'IFCBUILDING',
-    'IFCLOCALPLACEMENT',
-    'IFCDIRECTION',
-    'IFCAXIS2PLACEMENT3D',
-    'IFCRELAGGREGATES',
-    'IFCSITE',
-    'IFCRELDEFINESBYPROPERTIES',
-    'IFCPROPERTYSINGLEVALUE',
-    'IFCPROPERTYSET',
-    'IFCMONETARYUNIT',
-    'IFCDERIVEDUNIT',
-    'IFCDERIVEDUNITELEMENT',
-    'IFCCONVERSIONBASEDUNIT',
-    'IFCDIMENSIONALEXPONENTS',
-    'IFCMEASUREWITHUNIT',
-    'IFCSIUNIT',
-    'IFCUNITASSIGNMENT',
-    'IFCPROJECT',
-    'IFCSHELLBASEDSURFACEMODEL',
-  ];
 
   constructor(private httpClient: HttpClient) {
     this.onSelectActions = [];
@@ -163,14 +35,18 @@ export class IfcService {
   }
 
   startIfcViewer(container: HTMLElement) {
-    if (!container) return this.notFoundError('container');
+    if (!container) {
+      return this.notFoundError('container');
+    }
     this.container = container;
     this.setupIfcScene();
     this.setupInputs();
   }
 
   setupIfcScene() {
-    if (!this.container) return;
+    if (!this.container) {
+      return;
+    }
     const preselectMaterial = this.newMaterial(0xfbc02d, 0.2);
     const selectMaterial = this.newMaterial(0xfbc02d, 0.5);
     this.ifcViewer = new IfcViewerAPI({
@@ -189,7 +65,9 @@ export class IfcService {
   }
 
   setupInputs() {
-    if (!this.container) return;
+    if (!this.container) {
+      return;
+    }
     this.container.onclick = this.handleClick;
     this.container.onmousemove = this.handleMouseMove;
   }
@@ -219,13 +97,7 @@ export class IfcService {
   }
 
   async getSpaces(type: string) {
-    let obj: number;
-    for (let item of this.spacesTypes) {
-      if (item.type === type) {
-        obj = item.obj;
-        break;
-      }
-    }
+    let obj = IfcElements[type];
     return (await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
       this.ifcModel.modelID,
       obj,
@@ -325,7 +197,6 @@ export class IfcService {
   }
 
   toggleFloorClippingPlane(height: number, minHeight: number) {
-    // this.removeAllClippingPlanes();
     const modelCenter = {
       x:
         (this.ifcModel?.['geometry'].boundingBox.max.x +
@@ -407,22 +278,8 @@ export class IfcService {
     );
   }
 
-  getSpaceTypes() {
-    // return this.spacesTypes;
-    this.httpClient
-      .get('assets/ifc/1014016356.ifc', { responseType: 'text' })
-      .subscribe((res) => {
-        console.log(res);
-        const textRes = '' + res;
-        let spaces = [];
-
-        textRes.match(/(?<==).*?(?=\()/g).map((item) => {
-          if (spaces.indexOf(item) === -1 && this.ignoredTypes.indexOf(item) === -1 && item.indexOf('TYPE') === -1) {
-            spaces.push(item);
-          }
-        });
-        console.log(spaces);
-      });
+  async getSpaceTypes(modelId: string) {
+    return this.httpClient.get(modelId, { responseType: 'text' });
   }
 
   hideElement(expressId: number[]) {

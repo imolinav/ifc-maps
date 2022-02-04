@@ -7,15 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IfcService } from 'src/app/services/ifc/ifc.service';
-interface IfcElement {
-  expressID: number;
-  Name: {
-    value: string;
-  };
-  Elevation?: {
-    value: number;
-  }
-}
+import { IfcElement, IGNORED_TYPES, IfcElements } from './visualizer.constants';
 
 @Component({
   selector: 'app-visualizer',
@@ -37,22 +29,35 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   floors: IfcElement[];
   buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
-  spaceTypes: { type: string; obj: number }[];
+  spaceTypes: { type: string; obj: number }[] = [];
+  FILE_URL = 'assets/ifc/';
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
 
   constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
-    this.route.params.subscribe((res) => {
+  async ngOnInit() {
+    // TODO: refactor this
+    this.route.params.subscribe(async (res) => {
       this.ifcId = res['id'];
+      (await this.ifcService.getSpaceTypes(`${this.FILE_URL}${this.ifcId}.ifc`)).subscribe((res) => {
+        const textRes = '' + res;
+        textRes.match(/(?<==).*?(?=\()/g).map((item) => {
+          if (
+            !this.spaceTypes.find(element => element.type === item) &&
+            IGNORED_TYPES.indexOf(item) === -1 &&
+            item.indexOf('TYPE') === -1
+          ) {
+            this.spaceTypes.push({ type: item, obj: IfcElements[item] });
+          }
+        });
+      });
     });
-    this.ifcService.getSpaceTypes();
   }
 
   async ngAfterContentInit() {
     if (this.ifcId) {
-      this.loadModel(`assets/ifc/${this.ifcId}.ifc`);
+      this.loadModel(`${this.FILE_URL}${this.ifcId}.ifc`);
     }
   }
 
@@ -65,8 +70,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       /* this.ifcService.getSpaces('STAIR').then((spaces) => {
         { this.spaces } = spaces;
       }); */
-      this.spaces = await this.ifcService.getSpaces('STAIR');
-      this.floors = await this.ifcService.getSpaces('BUILDING_STOREY');
+      this.spaces = await this.ifcService.getSpaces('IFCSTAIR');
+      this.floors = await this.ifcService.getSpaces('IFCBUILDINGSTOREY');
       this.floors.sort(
         (a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1)
       );
