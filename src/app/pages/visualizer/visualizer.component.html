@@ -10,7 +10,7 @@
     <h2>{{ "VISUALIZER.LOADING.TEXT" | transloco }}</h2>
   </div>
 </div>
-<div class="options" *ngIf="spaces">
+<div class="options">
   <button
     mat-icon-button
     (click)="toggleElements()"
@@ -97,7 +97,6 @@
         {{ "VISUALIZER.ELEMENTS.ITEMS.PLACEHOLDER" | transloco }}
       </option>
       <option
-        [selected]="spaceType.type === 'STAIR'"
         [value]="spaceType.type"
         *ngFor="let spaceType of spaceTypes"
       >
@@ -115,11 +114,6 @@
       (mouseout)="highlightElement(item.expressID, false)"
     >
       {{ item.Name.value }}
-    </p>
-  </div>
-  <div *ngIf="!spaces || spaces.length === 0" class="elements-items">
-    <p class="elements-items-no-items">
-      {{ "VISUALIZER.ELEMENTS.NO_ITEMS" | transloco }}
     </p>
   </div>
 </div>
