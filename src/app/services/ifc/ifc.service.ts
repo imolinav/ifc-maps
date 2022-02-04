@@ -278,8 +278,20 @@ export class IfcService {
     );
   }
 
-  async getSpaceTypes(modelId: string) {
-    return this.httpClient.get(modelId, { responseType: 'text' });
+  getSpaceTypes(modelId: string) {
+    let spaces = [];
+    this.httpClient
+      .get(modelId, { responseType: 'text' })
+      .toPromise()
+      .then((res) => {
+        const textRes = '' + res;
+        textRes.match(/(?<==).*?(?=\()/g).map((item) => {
+          if (!spaces.find(element => element.type === item) && IGNORED_TYPES.indexOf(item) === -1 && item.indexOf('TYPE') === -1) {
+            spaces.push({ type: item, obj: IfcElements[item] });
+          }
+        });
+      });
+      return spaces;
   }
 
   hideElement(expressId: number[]) {
