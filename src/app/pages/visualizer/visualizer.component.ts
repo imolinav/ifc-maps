@@ -37,7 +37,6 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    // TODO: refactor this
     this.route.params.subscribe((res) => {
       this.ifcId = res['id'];
       this.spaceTypes = this.ifcService.getSpaceTypes(`${this.fileUrl}${this.ifcId}.ifc`);

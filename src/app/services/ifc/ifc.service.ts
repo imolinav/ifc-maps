@@ -279,6 +279,7 @@ export class IfcService {
   }
 
   getSpaceTypes(modelId: string) {
+    // TODO: refactor this (remove .toPromise() and use async/await?)
     let spaces = [];
     this.httpClient
       .get(modelId, { responseType: 'text' })
