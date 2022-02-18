@@ -92,6 +92,7 @@
                 "HIDE": "Hide element"
             },
             "CROP": "Crop",
+            "PLANE": "Plane",
             "INFO": "Element info"
         }
     } 

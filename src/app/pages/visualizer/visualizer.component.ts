@@ -1,5 +1,6 @@
 import {
   AfterContentInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -26,6 +27,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   elementsHidden: number[] = [];
   transparent = true;
   elementClip = false;
+  planeClip = false;
   floors: IfcElement[];
   buildingFloors: { expressID: number; floor: number; height: number }[];
   currentFloor = 0;
@@ -33,13 +35,16 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   fileUrl = 'assets/ifc/';
 
   @ViewChild('threeContainer', { static: true }) container?: ElementRef;
+  @ViewChild('planeContainer') planeContainer?: ElementRef;
 
-  constructor(private ifcService: IfcService, private route: ActivatedRoute) {}
+  constructor(private ifcService: IfcService, private route: ActivatedRoute, private ref: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.route.params.subscribe((res) => {
       this.ifcId = res['id'];
-      this.spaceTypes = this.ifcService.getSpaceTypes(`${this.fileUrl}${this.ifcId}.ifc`);
+      this.spaceTypes = this.ifcService.getSpaceTypes(
+        `${this.fileUrl}${this.ifcId}.ifc`
+      );
     });
   }
 
@@ -65,7 +70,11 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       const element = await this.ifcService.pick();
       // console.log(element);
       this.elementClip = false;
-      if (this.itemSelected && this.elementsHidden.indexOf(this.itemSelected.expressID) === -1) {
+      this.planeClip = false;
+      if (
+        this.itemSelected &&
+        this.elementsHidden.indexOf(this.itemSelected.expressID) === -1
+      ) {
         this.ifcService.showElement([this.itemSelected.expressID], false);
       }
       if (element !== -1) {
@@ -87,6 +96,11 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     return this.container.nativeElement as HTMLElement;
   }
 
+  private getPlaneContainer() {
+    if (!this.planeContainer) return null;
+    return this.planeContainer.nativeElement as HTMLElement;
+  }
+
   highlightElement(expressId: number, on: boolean) {
     if (on) {
       this.ifcService.highlightElement([expressId]);
@@ -99,6 +113,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     this.ifcService.unselectElement();
     this.ifcService.removeAllClippingPlanes();
     this.elementClip = false;
+    this.planeClip = false;
     if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
@@ -106,18 +121,29 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         this.ifcService.selectElement(expressId);
       }
       this.itemSelected = await this.ifcService.getElementSelected(expressId);
-      const floor = this.buildingFloors.find((item) => item.expressID === this.itemSelected.expressID);
-      if(floor) {
+      const floor = this.buildingFloors.find(
+        (item) => item.expressID === this.itemSelected.expressID
+      );
+      if (floor) {
         this.selectFloor(floor);
       }
     }
   }
 
-  private selectFloor(floor: { expressID: number, floor: number, height: number }) {
+  private selectFloor(floor: {
+    expressID: number;
+    floor: number;
+    height: number;
+  }) {
     this.elementClip = !this.elementClip;
-    const selectedFloor = this.buildingFloors.find((f) => f.floor === floor.floor);
+    const selectedFloor = this.buildingFloors.find(
+      (f) => f.floor === floor.floor
+    );
     this.currentFloor = selectedFloor.floor;
-    this.ifcService.toggleFloorClippingPlane(selectedFloor.height, this.buildingFloors[0].height);
+    this.ifcService.toggleFloorClippingPlane(
+      selectedFloor.height,
+      this.buildingFloors[0].height
+    );
   }
 
   toggleElements() {
@@ -150,7 +176,12 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
       this.elementClip,
       this.itemSelected.expressID
     );
-    if(!this.elementClip && this.buildingFloors.find(item => item.expressID === this.itemSelected.expressID)) {
+    if (
+      !this.elementClip &&
+      this.buildingFloors.find(
+        (item) => item.expressID === this.itemSelected.expressID
+      )
+    ) {
       this.itemSelected = null;
     }
   }
@@ -197,7 +228,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   toggleFloor(floor: number) {
-    const floorSelected = this.buildingFloors.find(f => f.floor === floor);
+    const floorSelected = this.buildingFloors.find((f) => f.floor === floor);
     this.selectElement(floorSelected.expressID);
   }
 
@@ -229,9 +260,27 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
 
   mySortingFunction = (a, b) => {
     return a.key > b.key ? -1 : 1;
-  }
+  };
 
   isObject(item: any) {
     return typeof item === 'object';
+  }
+
+  planeFromClip() {
+    this.planeClip = !this.planeClip;
+    this.ref.detectChanges();
+    if (this.planeClip) {
+      const planeContainer = this.getPlaneContainer();
+      if (planeContainer) {
+        this.ifcService.startPlaneViewer(planeContainer);
+        this.ifcService.loadPlaneUrl(`${this.fileUrl}${this.ifcId}.ifc`);
+      }
+    } else {
+      this.ifcService.removePlaneView();
+    }
+  }
+
+  refreshPlane() {
+    this.ifcService.createPlaneFromClip();
   }
 }

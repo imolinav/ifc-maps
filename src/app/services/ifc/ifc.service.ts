@@ -20,8 +20,10 @@ import {
 })
 export class IfcService {
   ifcViewer?: IfcViewerAPI;
+  planeViewer?: IfcViewerAPI;
   ifcModel: any;
   container?: HTMLElement;
+  planeContainer?: HTMLElement;
   onSelectActions: ((modelID: number, id: number) => void)[];
   ifcProductsType: { [modelID: number]: { [expressID: number]: number } };
   webConfig: LoaderSettings = {
@@ -72,6 +74,26 @@ export class IfcService {
     this.container.onmousemove = this.handleMouseMove;
   }
 
+  startPlaneViewer(planeContainer: HTMLElement) {
+    if (!planeContainer) {
+      return this.notFoundError('planeContainer');
+    }
+    this.planeContainer = planeContainer;
+    this.setupPlaneScene();
+  }
+
+  setupPlaneScene() {
+    if (!this.planeContainer) {
+      return;
+    }
+    this.planeViewer = new IfcViewerAPI({
+      container: this.planeContainer
+    });
+    this.planeViewer?.IFC.setWasmPath('assets/wasm/');
+    this.planeViewer?.IFC.applyWebIfcConfig(this.webConfig);
+    this.planeViewer?.toggleClippingPlanes();
+  }
+
   /* subscribeOnSelect(action: (modelID: number, id: number) => void) {
     this.onSelectActions.push(action);
   } */
@@ -88,6 +110,12 @@ export class IfcService {
       // console.log(res);
       this.ifcModel = res;
       this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
+    });
+  }
+
+  async loadPlaneUrl(url: string) {
+    await this.planeViewer?.IFC.loadIfcUrl(url, false).then((res) => {
+      this.createPlaneFromClip();
     });
   }
 
@@ -225,8 +253,7 @@ export class IfcService {
     this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
-    const element = await this.getElementSelected(found.id);
-    return element;
+    return this.getElementSelected(found.id);
   }
 
   private handleClick = (_event: Event) => {};
@@ -320,4 +347,15 @@ export class IfcService {
       true
     );
   }
+
+  createPlaneFromClip() {
+    this.removePlaneView();
+    const clippingPlane = this.ifcViewer?.clipper.planes[0];
+    this.planeViewer?.clipper.createFromNormalAndCoplanarPoint(clippingPlane.normal, clippingPlane.arrowBoundingBox.position);
+  }
+
+  removePlaneView() {
+    this.planeViewer?.clipper.deleteAllPlanes();
+  }
+
 }

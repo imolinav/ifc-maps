@@ -69,10 +69,20 @@
     [disabled]="elementsHidden.indexOf(this.itemSelected.expressID) >= 0"
     (click)="toggleClippingPlane()"
     [color]="elementClip ? 'accent' : ''"
-    [matTooltip]="'VISUALIZER.OPTIONS.TRANSFORM' | transloco"
+    [matTooltip]="'VISUALIZER.OPTIONS.CROP' | transloco"
     [matTooltipPosition]="'left'"
   >
     <mat-icon>crop</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    *ngIf="elementClip"
+    (click)="planeFromClip()"
+    [color]="planeClip ? 'accent' : ''"
+    [matTooltip]="'VISUALIZER.OPTIONS.PLANE' | transloco"
+    [matTooltipPosition]="'left'"
+  >
+    <mat-icon>vertical_align_bottom</mat-icon>
   </button>
   <button
     mat-icon-button
@@ -180,7 +190,6 @@
   </div>
 </div>
 <div class="info" *ngIf="itemSelected && infoExpanded">
-  <!-- <h3 *ngIf="itemSelected.Name.value">{{ itemSelected.Name.value }}</h3> -->
   <ng-container
     *ngFor="let item of itemSelected | keyvalue: mySortingFunction"
   >
@@ -194,3 +203,12 @@
   </ng-container>
 </div>
 <div #threeContainer class="viewer"></div>
+<div class="plane" *ngIf="planeClip">
+  <div class="plane-overlay">
+    <div class="plane-overlay-container">
+      <mat-icon class="plane-overlay-container-icon" (click)="refreshPlane()">refresh</mat-icon>
+      <mat-icon class="plane-overlay-container-icon">camera_alt</mat-icon>
+    </div>
+  </div>
+  <div #planeContainer class="plane-element"></div>
+</div>
