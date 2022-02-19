@@ -12,7 +12,7 @@ import {
   IGNORED_TYPES,
   IfcElements,
   IfcElement,
-  IfcModel,
+  IfcModel
 } from '../../pages/visualizer/visualizer.constants';
 
 @Injectable({
@@ -21,7 +21,7 @@ import {
 export class IfcService {
   ifcViewer?: IfcViewerAPI;
   planeViewer?: IfcViewerAPI;
-  ifcModel: any;
+  ifcModel: IfcModel;
   container?: HTMLElement;
   planeContainer?: HTMLElement;
   onSelectActions: ((modelID: number, id: number) => void)[];
@@ -101,15 +101,15 @@ export class IfcService {
   async loadIfc(file: File) {
     await this.ifcViewer?.IFC.loadIfc(file, true).then((res) => {
       this.ifcModel = res;
-      this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
+      this.changeTransparency(true, 0.1);
     });
   }
 
   async loadIfcUrl(url: string) {
     await this.ifcViewer?.IFC.loadIfcUrl(url, false).then((res) => {
-      // console.log(res);
       this.ifcModel = res;
-      this.ifcViewer?.IFC.setModelTranslucency(res.modelID, true, 0.1, true);
+      // console.log(this.ifcModel);
+      this.changeTransparency(true, 0.1);
     });
   }
 
@@ -120,7 +120,7 @@ export class IfcService {
   }
 
   select(modelID: number, expressId: number, pick = true) {
-    if (pick) this.ifcViewer?.IFC.pickIfcItemsByID(modelID, [expressId]);
+    if (pick) this.ifcViewer?.IFC.selector.pickIfcItemsByID(modelID, [expressId]);
     this.onSelectActions.forEach((action) => action(modelID, expressId));
   }
 
@@ -150,7 +150,7 @@ export class IfcService {
           2,
       };
 
-      const selection = this.ifcViewer?.IFC.selection.mesh;
+      const selection = this.ifcViewer?.IFC.selector.selection.mesh;
       const selectionAxis = {
         x: {
           size: Math.abs(
@@ -249,7 +249,7 @@ export class IfcService {
   }
 
   async pick() {
-    const found = await this.ifcViewer?.IFC.pickIfcItem(true);
+    const found = await this.ifcViewer?.IFC.selector.pickIfcItem(true);
     this.ifcViewer?.clipper.deleteAllPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
@@ -259,7 +259,7 @@ export class IfcService {
   private handleClick = (_event: Event) => {};
 
   private handleMouseMove = (_event: Event) => {
-    this.ifcViewer?.IFC.prePickIfcItem();
+    this.ifcViewer?.IFC.selector.prePickIfcItem();
   };
 
   private notFoundError(item: string) {
@@ -277,11 +277,11 @@ export class IfcService {
   }
 
   highlightElement(expressId: number[]) {
-    this.ifcViewer?.IFC.highlight.pickByID(this.ifcModel.modelID, expressId);
+    this.ifcViewer?.IFC.selector.highlight.pickByID(this.ifcModel.modelID, expressId)
   }
 
   selectElement(expressId: number) {
-    this.ifcViewer?.IFC.selection.pickByID(
+    this.ifcViewer?.IFC.selector.selection.pickByID(
       this.ifcModel.modelID,
       [expressId],
       true
@@ -289,20 +289,24 @@ export class IfcService {
   }
 
   unselectElement() {
-    this.ifcViewer?.IFC.unpickIfcItems();
+    this.ifcViewer?.IFC.selector.unpickIfcItems();
   }
 
   removeHighlights() {
-    this.ifcViewer?.IFC.unHighlightIfcItems();
+    this.ifcViewer?.IFC.selector.unHighlightIfcItems();
   }
 
   changeTransparency(on: boolean, value: number) {
-    this.ifcViewer?.IFC.setModelTranslucency(
-      this.ifcModel.modelID,
-      on,
-      value,
-      true
-    );
+    const materials = this.ifcModel.material;
+    if(Array.isArray(materials)) {
+      materials.forEach(material => {
+        material.transparent = on;
+        material.opacity = value;
+      });
+    } else {
+      materials.transparent = on;
+      materials.opacity = value;
+    }
   }
 
   getSpaceTypes(modelId: string) {
@@ -323,21 +327,21 @@ export class IfcService {
   }
 
   hideElement(expressId: number[]) {
-    this.ifcViewer?.IFC.loader.ifcManager.hideItems(
+    /* this.ifcViewer?.IFC.loader.ifcManager.hideItems(
       this.ifcModel.modelID,
       expressId
     );
-    this.unselectElement();
+    this.unselectElement(); */
   }
 
   showElement(expressId: number[], select?: boolean) {
-    this.ifcViewer?.IFC.loader.ifcManager.showItems(
+    /* this.ifcViewer?.IFC.loader.ifcManager.showItems(
       this.ifcModel.modelID,
       expressId
     );
     if (select) {
       expressId.forEach((element) => this.selectElement(element));
-    }
+    } */
   }
 
   async getElementSelected(expressId: number) {
@@ -351,6 +355,7 @@ export class IfcService {
   createPlaneFromClip() {
     this.removePlaneView();
     const clippingPlane = this.ifcViewer?.clipper.planes[0];
+    console.log(clippingPlane);
     this.planeViewer?.clipper.createFromNormalAndCoplanarPoint(clippingPlane.normal, clippingPlane.arrowBoundingBox.position);
   }
 

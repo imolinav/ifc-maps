@@ -1,4 +1,5 @@
-import { BufferGeometry, Material } from 'three';
+import { BufferGeometry, Material, Mesh } from 'three';
+import { IfcManager } from 'web-ifc-viewer/dist/components';
 
 export const IGNORED_TYPES = [
   'IFCCONNECTIONCURVEGEOMETRY',
@@ -897,19 +898,9 @@ export enum IfcElements {
   IFCZONE = 1033361043,
 }
 
-export interface IfcModel {
+export interface IfcModel extends Mesh {
   modelID: number;
-  mesh: { modelID: number };
-  items: {
-    [materialID: string]: {
-      material: Material;
-      geometries: { [expressID: number]: BufferGeometry };
-    };
-  };
-  types: { [key: number]: number };
-  jsonData: {
-    [id: number]: { expressID: number; type: string; [key: string]: any };
-  };
+  ifcManager: IfcManager;
 }
 
 export interface IfcElement {
