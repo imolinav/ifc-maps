@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DoubleSide, MeshLambertMaterial, Vector3 } from 'three';
+import { Box3, BufferAttribute, BufferGeometry, DoubleSide, Mesh, MeshLambertMaterial, Vector3 } from 'three';
 import {
   acceleratedRaycast,
   computeBoundsTree,
@@ -134,52 +134,79 @@ export class IfcService {
   }
 
   toggleClippingPlane(on: boolean, expressId: number) {
+    debugger;
     if (on) {
       const modelCenter = {
         x:
-          (this.ifcModel?.['geometry'].boundingBox.max.x +
-            this.ifcModel?.['geometry'].boundingBox.min.x) /
+          (this.ifcModel?.geometry.boundingBox.max.x +
+            this.ifcModel?.geometry.boundingBox.min.x) /
           2,
         y:
-          (this.ifcModel?.['geometry'].boundingBox.max.y +
-            this.ifcModel?.['geometry'].boundingBox.min.y) /
+          (this.ifcModel?.geometry.boundingBox.max.y +
+            this.ifcModel?.geometry.boundingBox.min.y) /
           2,
         z:
-          (this.ifcModel?.['geometry'].boundingBox.max.z +
-            this.ifcModel?.['geometry'].boundingBox.min.z) /
+          (this.ifcModel?.geometry.boundingBox.max.z +
+            this.ifcModel?.geometry.boundingBox.min.z) /
           2,
       };
 
+
       const selection = this.ifcViewer?.IFC.selector.selection.mesh;
+      const geometry = new BufferGeometry();
+      
+      const coordinates = [];
+      const alreadySaved = new Set();
+      const position = selection.geometry.attributes['position'];
+      
+      for (let i = 0; i < selection.geometry.index.array.length; i++) {
+        if(!alreadySaved.has(selection.geometry.index.array[i])){
+          coordinates.push(position.getX(selection.geometry.index.array[i]));
+          coordinates.push(position.getY(selection.geometry.index.array[i]));
+          coordinates.push(position.getZ(selection.geometry.index.array[i]));
+          alreadySaved.add(selection.geometry.index.array[i]);
+        }
+      }
+
+      const vertices = Float32Array.from(coordinates);
+      console.log(vertices);
+      geometry.setAttribute('position', new BufferAttribute(vertices, selection.geometry.index.count));
+      const mesh = new Mesh(geometry);
+      console.log(mesh);
+
+      const boundingBox = new Box3();
+      boundingBox.setFromObject(mesh);
+      console.log(boundingBox);
+
       const selectionAxis = {
         x: {
           size: Math.abs(
-            selection.geometry.boundingBox.max.x -
-              selection.geometry.boundingBox.min.x
+            boundingBox.max.x -
+            boundingBox.min.x
           ),
           center:
-            (selection.geometry.boundingBox.max.x +
-              selection.geometry.boundingBox.min.x) /
+            (boundingBox.max.x +
+              boundingBox.min.x) /
             2,
         },
         y: {
           size: Math.abs(
-            selection.geometry.boundingBox.max.y -
-              selection.geometry.boundingBox.min.y
+            boundingBox.max.y -
+              boundingBox.min.y
           ),
           center:
-            (selection.geometry.boundingBox.max.y +
-              selection.geometry.boundingBox.min.y) /
+            (boundingBox.max.y +
+              boundingBox.min.y) /
             2,
         },
         z: {
           size: Math.abs(
-            selection.geometry.boundingBox.max.z -
-              selection.geometry.boundingBox.min.z
+            boundingBox.max.z -
+              boundingBox.min.z
           ),
           center:
-            (selection.geometry.boundingBox.max.z +
-              selection.geometry.boundingBox.min.z) /
+            (boundingBox.max.z +
+              boundingBox.min.z) /
             2,
         },
       };
@@ -227,17 +254,17 @@ export class IfcService {
   toggleFloorClippingPlane(height: number, minHeight: number) {
     const modelCenter = {
       x:
-        (this.ifcModel?.['geometry'].boundingBox.max.x +
-          this.ifcModel?.['geometry'].boundingBox.min.x) /
+        (this.ifcModel?.geometry.boundingBox.max.x +
+          this.ifcModel?.geometry.boundingBox.min.x) /
         2,
       z:
-        (this.ifcModel?.['geometry'].boundingBox.max.z +
-          this.ifcModel?.['geometry'].boundingBox.min.z) /
+        (this.ifcModel?.geometry.boundingBox.max.z +
+          this.ifcModel?.geometry.boundingBox.min.z) /
         2,
     };
     const normal = new Vector3(0, -1, 0);
     const planeHeight =
-      this.ifcModel?.['geometry'].boundingBox.min.y +
+      this.ifcModel?.geometry.boundingBox.min.y +
       Math.abs(minHeight / 1000) +
       height / 1000;
     const point = new Vector3(modelCenter.x, planeHeight, modelCenter.z);
