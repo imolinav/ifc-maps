@@ -133,83 +133,88 @@ export class IfcService {
     )) as IfcElement[];
   }
 
+  private getModelCenter() {
+    return {
+      x:
+        (this.ifcModel?.geometry.boundingBox.max.x +
+          this.ifcModel?.geometry.boundingBox.min.x) /
+        2,
+      y:
+        (this.ifcModel?.geometry.boundingBox.max.y +
+          this.ifcModel?.geometry.boundingBox.min.y) /
+        2,
+      z:
+        (this.ifcModel?.geometry.boundingBox.max.z +
+          this.ifcModel?.geometry.boundingBox.min.z) /
+        2,
+    };
+  }
+
+  private getElementBoundingBox(selection: Mesh) {
+    const geometry = new BufferGeometry();
+    const coordinates = [];
+    const alreadySaved = new Set();
+    const position = selection.geometry.attributes['position'];
+    
+    for (let i = 0; i < selection.geometry.index.array.length; i++) {
+      if(!alreadySaved.has(selection.geometry.index.array[i])){
+        coordinates.push(position.getX(selection.geometry.index.array[i]));
+        coordinates.push(position.getY(selection.geometry.index.array[i]));
+        coordinates.push(position.getZ(selection.geometry.index.array[i]));
+        alreadySaved.add(selection.geometry.index.array[i]);
+      }
+    }
+
+    const vertices = Float32Array.from(coordinates);
+    geometry.setAttribute('position', new BufferAttribute(vertices, selection.geometry.index.count));
+    const mesh = new Mesh(geometry);
+
+    const boundingBox = new Box3();
+    boundingBox.setFromObject(mesh);
+    return boundingBox;
+  }
+
+  private getSelectionAxisFromBoundingBox(boundingBox: Box3) {
+    return {
+      x: {
+        size: Math.abs(
+          boundingBox.max.x -
+          boundingBox.min.x
+        ),
+        center:
+          (boundingBox.max.x +
+            boundingBox.min.x) /
+          2,
+      },
+      y: {
+        size: Math.abs(
+          boundingBox.max.y -
+            boundingBox.min.y
+        ),
+        center:
+          (boundingBox.max.y +
+            boundingBox.min.y) /
+          2,
+      },
+      z: {
+        size: Math.abs(
+          boundingBox.max.z -
+            boundingBox.min.z
+        ),
+        center:
+          (boundingBox.max.z +
+            boundingBox.min.z) /
+          2,
+      },
+    };
+  }
+
   toggleClippingPlane(on: boolean, expressId: number) {
     debugger;
     if (on) {
-      const modelCenter = {
-        x:
-          (this.ifcModel?.geometry.boundingBox.max.x +
-            this.ifcModel?.geometry.boundingBox.min.x) /
-          2,
-        y:
-          (this.ifcModel?.geometry.boundingBox.max.y +
-            this.ifcModel?.geometry.boundingBox.min.y) /
-          2,
-        z:
-          (this.ifcModel?.geometry.boundingBox.max.z +
-            this.ifcModel?.geometry.boundingBox.min.z) /
-          2,
-      };
-
-
-      const selection = this.ifcViewer?.IFC.selector.selection.mesh;
-      const geometry = new BufferGeometry();
-      
-      const coordinates = [];
-      const alreadySaved = new Set();
-      const position = selection.geometry.attributes['position'];
-      
-      for (let i = 0; i < selection.geometry.index.array.length; i++) {
-        if(!alreadySaved.has(selection.geometry.index.array[i])){
-          coordinates.push(position.getX(selection.geometry.index.array[i]));
-          coordinates.push(position.getY(selection.geometry.index.array[i]));
-          coordinates.push(position.getZ(selection.geometry.index.array[i]));
-          alreadySaved.add(selection.geometry.index.array[i]);
-        }
-      }
-
-      const vertices = Float32Array.from(coordinates);
-      console.log(vertices);
-      geometry.setAttribute('position', new BufferAttribute(vertices, selection.geometry.index.count));
-      const mesh = new Mesh(geometry);
-      console.log(mesh);
-
-      const boundingBox = new Box3();
-      boundingBox.setFromObject(mesh);
-      console.log(boundingBox);
-
-      const selectionAxis = {
-        x: {
-          size: Math.abs(
-            boundingBox.max.x -
-            boundingBox.min.x
-          ),
-          center:
-            (boundingBox.max.x +
-              boundingBox.min.x) /
-            2,
-        },
-        y: {
-          size: Math.abs(
-            boundingBox.max.y -
-              boundingBox.min.y
-          ),
-          center:
-            (boundingBox.max.y +
-              boundingBox.min.y) /
-            2,
-        },
-        z: {
-          size: Math.abs(
-            boundingBox.max.z -
-              boundingBox.min.z
-          ),
-          center:
-            (boundingBox.max.z +
-              boundingBox.min.z) /
-            2,
-        },
-      };
+      const modelCenter = this.getModelCenter();
+      const boundingBox = this.getElementBoundingBox(this.ifcViewer?.IFC.selector.selection.mesh);
+      const selectionAxis = this.getSelectionAxisFromBoundingBox(boundingBox);
 
       let direction = 1;
 
