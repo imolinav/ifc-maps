@@ -210,7 +210,6 @@ export class IfcService {
   }
 
   toggleClippingPlane(on: boolean, expressId: number) {
-    debugger;
     if (on) {
       const modelCenter = this.getModelCenter();
       const boundingBox = this.getElementBoundingBox(this.ifcViewer?.IFC.selector.selection.mesh);
@@ -278,11 +277,15 @@ export class IfcService {
 
   removeAllClippingPlanes() {
     this.ifcViewer?.clipper.deleteAllPlanes();
+    const clippingPlanes = this.ifcViewer?.clipper['context'].clippingPlanes;
+    for (let plane of clippingPlanes) {
+      this.ifcViewer?.clipper['context'].removeClippingPlane(plane);
+    }
   }
 
   async pick() {
     const found = await this.ifcViewer?.IFC.selector.pickIfcItem(true);
-    this.ifcViewer?.clipper.deleteAllPlanes();
+    this.removeAllClippingPlanes();
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
     return this.getElementSelected(found.id);
@@ -387,7 +390,6 @@ export class IfcService {
   createPlaneFromClip() {
     this.removePlaneView();
     const clippingPlane = this.ifcViewer?.clipper.planes[0];
-    console.log(clippingPlane);
     this.planeViewer?.clipper.createFromNormalAndCoplanarPoint(clippingPlane.normal, clippingPlane.arrowBoundingBox.position);
   }
 
