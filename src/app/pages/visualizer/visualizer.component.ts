@@ -147,12 +147,10 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   }
 
   toggleElements() {
-    this.transparencyExpanded = false;
     this.elementsExpanded = !this.elementsExpanded;
   }
 
   toggleTransparency() {
-    this.elementsExpanded = false;
     this.transparencyExpanded = !this.transparencyExpanded;
   }
 

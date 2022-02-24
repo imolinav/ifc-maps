@@ -99,6 +99,12 @@
   background-color: white;
   padding: 0 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  &-handle {
+    vertical-align: middle;
+    margin-right: 5px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: move;
+  }
 }
 
 .floors {
@@ -110,6 +116,12 @@
   align-content: space-between;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  &-handle {
+    margin-top: 15px;
+    margin-right: 10px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: move;
+  }
   &-container {
     padding: 0 20px;
     padding-bottom: 20px;
@@ -187,8 +199,15 @@
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   &-search {
-      margin: 15px 0;
-      padding: 0 20px;
+    margin: 15px 0;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+      &-handle {
+        margin-left: 10px;
+        color: rgba(0, 0, 0, 0.5);
+        cursor: move;
+      }
       select {
         border-radius: 7px;
       }
@@ -225,6 +244,13 @@
   background-color: white;
   box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding: 15px;
+  &-handle {
+    margin-right: 10px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: move;
+    position: absolute;
+    right: 0;
+  }
   &-item {
     margin-bottom: 15px;
     &-title {
