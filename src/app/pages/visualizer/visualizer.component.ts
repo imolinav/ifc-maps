@@ -22,7 +22,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   loading = false;
   elementsExpanded = false;
   transparencyExpanded = false;
-  layersExpanded = false;
+  layersExpanded = true;
   infoExpanded = false;
   elementsHidden: number[] = [];
   transparent = true;
@@ -109,7 +109,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     }
   }
 
-  async selectElement(expressId: number) {
+  selectElement(expressId: number) {
     this.ifcService.unselectElement();
     this.ifcService.removeAllClippingPlanes();
     this.elementClip = false;
@@ -117,16 +117,17 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (this.itemSelected && this.itemSelected.expressID === expressId) {
       this.itemSelected = null;
     } else {
-      if (this.elementsHidden.indexOf(expressId) === -1) {
-        this.ifcService.selectElement(expressId);
-      }
-      this.itemSelected = await this.ifcService.getElementSelected(expressId);
-      const floor = this.buildingFloors.find(
-        (item) => item.expressID === this.itemSelected.expressID
-      );
-      if (floor) {
-        this.selectFloor(floor);
-      }
+      this.ifcService.getElementSelected(expressId).then((res) => {
+        this.itemSelected = res;
+        const floor = this.buildingFloors.find(
+          (item) => item.expressID === this.itemSelected.expressID
+        );
+        if (floor) {
+          this.selectFloor(floor);
+        } else if(this.elementsHidden.indexOf(expressId) === -1) {
+          this.ifcService.selectElement(expressId);
+        }
+      });
     }
   }
 
@@ -135,7 +136,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     floor: number;
     height: number;
   }) {
-    this.elementClip = !this.elementClip;
+    this.elementClip = true;
     const selectedFloor = this.buildingFloors.find(
       (f) => f.floor === floor.floor
     );

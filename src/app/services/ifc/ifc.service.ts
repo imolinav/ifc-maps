@@ -257,16 +257,7 @@ export class IfcService {
   }
 
   toggleFloorClippingPlane(height: number, minHeight: number) {
-    const modelCenter = {
-      x:
-        (this.ifcModel?.geometry.boundingBox.max.x +
-          this.ifcModel?.geometry.boundingBox.min.x) /
-        2,
-      z:
-        (this.ifcModel?.geometry.boundingBox.max.z +
-          this.ifcModel?.geometry.boundingBox.min.z) /
-        2,
-    };
+    const modelCenter = this.getModelCenter();
     const normal = new Vector3(0, -1, 0);
     const planeHeight =
       this.ifcModel?.geometry.boundingBox.min.y +
@@ -274,6 +265,7 @@ export class IfcService {
       height / 1000;
     const point = new Vector3(modelCenter.x, planeHeight, modelCenter.z);
     this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
+    this.unselectElement();
   }
 
   async pick() {
@@ -308,7 +300,7 @@ export class IfcService {
     this.ifcViewer?.IFC.selector.highlight.pickByID(this.ifcModel.modelID, expressId)
   }
 
-  selectElement(expressId: number) {
+  async selectElement(expressId: number) {
     this.ifcViewer?.IFC.selector.selection.pickByID(
       this.ifcModel.modelID,
       [expressId],
