@@ -5,6 +5,7 @@ import { TranslocoRootModule } from 'src/app/transloco-root.module';
 
 import { VisualizerRoutingModule } from './visualizer-routing.module';
 import { VisualizerComponent } from './visualizer.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { VisualizerComponent } from './visualizer.component';
     CommonModule,
     MaterialModule,
     TranslocoRootModule,
-    VisualizerRoutingModule
+    VisualizerRoutingModule,
+    DragDropModule
   ]
 })
 export class VisualizerModule { }

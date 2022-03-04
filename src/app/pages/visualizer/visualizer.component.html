@@ -94,7 +94,7 @@
     <mat-icon>info</mat-icon>
   </button>
 </div>
-<div class="elements" *ngIf="elementsExpanded">
+<div class="elements" *ngIf="elementsExpanded" cdkDrag>
   <div class="elements-search">
     <select
       class="form-select"
@@ -113,6 +113,7 @@
         {{ "VISUALIZER.ELEMENTS.ITEMS." + spaceType.type | transloco }}
       </option>
     </select>
+    <mat-icon class="elements-search-handle" cdkDragHandle>drag_indicator</mat-icon>
   </div>
   <div *ngIf="spaces && spaces.length > 0" class="elements-items">
     <p
@@ -127,7 +128,7 @@
     </p>
   </div>
 </div>
-<div class="transparency" *ngIf="transparencyExpanded">
+<div class="transparency" *ngIf="transparencyExpanded" cdkDrag>
   <mat-checkbox
     class="elements-body-search-checkbox"
     [checked]="transparent"
@@ -145,8 +146,9 @@
     [disabled]="!transparent"
   >
   </mat-slider>
+  <mat-icon class="transparency-handle" cdkDragHandle>drag_indicator</mat-icon>
 </div>
-<div class="floors" *ngIf="buildingFloors && layersExpanded">
+<div class="floors" *ngIf="buildingFloors && layersExpanded" cdkDrag>
   <div class="floors-number">
     <button
       (click)="floorUp()"
@@ -188,8 +190,10 @@
       </svg>
     </div>
   </div>
+  <mat-icon class="floors-handle" cdkDragHandle>drag_indicator</mat-icon>
 </div>
-<div class="info" *ngIf="itemSelected && infoExpanded">
+<div class="info" *ngIf="itemSelected && infoExpanded" cdkDrag>
+  <mat-icon class="info-handle" cdkDragHandle>drag_indicator</mat-icon>
   <ng-container
     *ngFor="let item of itemSelected | keyvalue: mySortingFunction"
   >
