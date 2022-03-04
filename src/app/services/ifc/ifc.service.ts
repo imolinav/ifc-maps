@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { first } from 'rxjs';
 import { Box3, BufferAttribute, BufferGeometry, DoubleSide, Mesh, MeshLambertMaterial, Vector3 } from 'three';
 import {
   acceleratedRaycast,
@@ -250,7 +251,7 @@ export class IfcService {
       this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
       this.unselectElement();
     } else {
-      this.removeAllClippingPlanes();
+      this.removePlanes(this.ifcViewer);
       this.showElement([expressId], true);
     }
   }
@@ -275,17 +276,9 @@ export class IfcService {
     this.ifcViewer?.clipper.createFromNormalAndCoplanarPoint(normal, point);
   }
 
-  removeAllClippingPlanes() {
-    this.ifcViewer?.clipper.deleteAllPlanes();
-    const clippingPlanes = this.ifcViewer?.clipper['context'].clippingPlanes;
-    for (let plane of clippingPlanes) {
-      this.ifcViewer?.clipper['context'].removeClippingPlane(plane);
-    }
-  }
-
   async pick() {
     const found = await this.ifcViewer?.IFC.selector.pickIfcItem(true);
-    this.removeAllClippingPlanes();
+    this.removePlanes(this.ifcViewer);
     if (!found) return -1;
     this.select(found.modelID, found.id, false);
     return this.getElementSelected(found.id);
@@ -345,12 +338,11 @@ export class IfcService {
   }
 
   getSpaceTypes(modelId: string) {
-    // TODO: refactor this (remove .toPromise() and use async/await?)
     let spaces = [];
     this.httpClient
       .get(modelId, { responseType: 'text' })
-      .toPromise()
-      .then((res) => {
+      .pipe(first())
+      .subscribe((res) => {
         const textRes = '' + res;
         textRes.match(/(?<==).*?(?=\()/g).map((item) => {
           if (!spaces.find(element => element.type === item) && IGNORED_TYPES.indexOf(item) === -1 && item.indexOf('TYPE') === -1) {
@@ -388,13 +380,25 @@ export class IfcService {
   }
 
   createPlaneFromClip() {
-    this.removePlaneView();
+    this.removePlanes(this.planeViewer);
     const clippingPlane = this.ifcViewer?.clipper.planes[0];
     this.planeViewer?.clipper.createFromNormalAndCoplanarPoint(clippingPlane.normal, clippingPlane.arrowBoundingBox.position);
   }
 
   removePlaneView() {
-    this.planeViewer?.clipper.deleteAllPlanes();
+    this.removePlanes(this.planeViewer);
+  }
+
+  removeAllClippingPlanes() {
+    this.removePlanes(this.ifcViewer);
+  }
+
+  private removePlanes(viewer: IfcViewerAPI) {
+    viewer?.clipper.deleteAllPlanes();
+    const clippingPlanes = viewer?.clipper['context'].clippingPlanes;
+    for (let plane of clippingPlanes) {
+      viewer?.clipper['context'].removeClippingPlane(plane);
+    }
   }
 
 }
