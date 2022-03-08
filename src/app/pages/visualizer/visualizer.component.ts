@@ -22,7 +22,7 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
   loading = false;
   elementsExpanded = false;
   transparencyExpanded = false;
-  layersExpanded = true;
+  layersExpanded = false;
   infoExpanded = false;
   elementsHidden: number[] = [];
   transparent = true;

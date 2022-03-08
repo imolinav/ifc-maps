@@ -346,21 +346,26 @@ export class IfcService {
   }
 
   hideElement(expressId: number[]) {
-    /* this.ifcViewer?.IFC.loader.ifcManager.hideItems(
-      this.ifcModel.modelID,
-      expressId
-    );
-    this.unselectElement(); */
+    const subset = this.getSubset(expressId);
+    subset.removeFromParent();
+    this.unselectElement();
   }
 
   showElement(expressId: number[], select?: boolean) {
-    /* this.ifcViewer?.IFC.loader.ifcManager.showItems(
-      this.ifcModel.modelID,
-      expressId
-    );
+    const subset = this.getSubset(expressId);
+    this.ifcViewer?.context.scene.scene.add(subset);
     if (select) {
       expressId.forEach((element) => this.selectElement(element));
-    } */
+    }
+  }
+
+  private getSubset(expressId: number[]) {
+    return this.ifcViewer?.IFC.loader.ifcManager.createSubset({
+      modelID: this.ifcModel.modelID,
+      removePrevious: true,
+      ids: expressId,
+      scene: this.ifcViewer?.context.scene.scene,
+    });
   }
 
   async getElementSelected(expressId: number) {
