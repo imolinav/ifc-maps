@@ -126,10 +126,11 @@ export class IfcService {
   }
 
   async getSpaces(type: string) {
-    let obj = IfcElements[type];
+    let obj = IfcElements.find(elem => elem.key === type);
+    
     return (await this.ifcViewer?.IFC.loader.ifcManager.getAllItemsOfType(
       this.ifcModel.modelID,
-      obj,
+      obj.value,
       true
     )) as IfcElement[];
   }

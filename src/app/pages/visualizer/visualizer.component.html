@@ -96,7 +96,7 @@
 </div>
 <div class="elements" *ngIf="elementsExpanded" cdkDrag>
   <div class="elements-search">
-    <select
+    <!-- <select
       class="form-select"
       aria-label="Default select example"
       #spaceType
@@ -112,7 +112,7 @@
       >
         {{ "VISUALIZER.ELEMENTS.ITEMS." + spaceType.type | transloco }}
       </option>
-    </select>
+    </select> -->
     <mat-icon class="elements-search-handle" cdkDragHandle>drag_indicator</mat-icon>
   </div>
   <div *ngIf="spaces && spaces.length > 0" class="elements-items">
@@ -124,7 +124,7 @@
       (click)="selectElement(item.expressID)"
       (mouseout)="highlightElement(item.expressID, false)"
     >
-      {{ item.Name.value }}
+      {{ item.LongName.value }}
     </p>
   </div>
 </div>

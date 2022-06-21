@@ -60,6 +60,8 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
     if (container) {
       this.ifcService.startIfcViewer(container);
       await this.ifcService.loadIfcUrl(url);
+      this.spaces = await this.ifcService.getSpaces('IFCSPACE');
+      console.log(this.spaces);
       this.floors = await this.ifcService.getSpaces('IFCBUILDINGSTOREY');
       this.floors.sort(
         (a, b) => 0 - (a.Elevation.value > b.Elevation.value ? -1 : 1)
@@ -212,13 +214,14 @@ export class VisualizerComponent implements OnInit, AfterContentInit {
         });
       }
     }
+    console.log(floors);
     for (let j = sub; j < floors.length; j++) {
-      const floorNum = Number(floors[j].Name.value.match(/-?\d+/)[0])
+      /* const floorNum = Number(floors[j].Name.value.match(/-?\d+/)[0])
         ? Number(floors[j].Name.value.match(/-?\d+/)[0])
-        : j - sub;
+        : j - sub; */
       buildingFloors.push({
         expressID: floors[j].expressID,
-        floor: floorNum,
+        floor: j,
         height: floors[j].Elevation.value,
       });
     }
